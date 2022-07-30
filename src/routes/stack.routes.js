@@ -3,6 +3,7 @@ import Home from '../Home/index';
 import Login from '../Login/index';
 import RondaPonto from '../RondaPonto/index';
 import HomeAuth from '../HomeAuth/index';
+import Ocorrencia from '../Ocorrencia/index';
 
 const { Screen, Navigator } = createNativeStackNavigator();
 
@@ -22,6 +23,8 @@ export function StackRoutes(){
       <Screen name="HomeAuth" component={HomeAuth} options={{
         headerShown: false
       }}/>
+
+      <Screen name="Ocorrencia" component={Ocorrencia}/>
     </Navigator>
   )
 }

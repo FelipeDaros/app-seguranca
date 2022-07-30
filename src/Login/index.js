@@ -1,10 +1,24 @@
-import { Text, View, StyleSheet, TextInput, TouchableOpacity, Button } from "react-native";
+import { Text, View, StyleSheet, TextInput, TouchableOpacity, Button, Alert } from "react-native";
+import React, {useState} from "react";
+import axios from 'axios';
 
 
 export default function Login({ navigation }){
-  
-  function homeAuth(){
-    navigation.navigate('HomeAuth')
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+
+  async function login(){
+    console.log(email, password)
+
+    
+    await axios.post('https://backend-seguranca.herokuapp.com/api/users/signin', {
+      email,
+      password
+    }).then(r => {;
+      navigation.navigate('HomeAuth')
+    }).catch(r => {
+      Alert.alert('Usuário ou senha Inválida')
+    })
   }
 
   return (
@@ -12,13 +26,17 @@ export default function Login({ navigation }){
       <Text style={styles.textoApp}>Segurança na Mão</Text>
       <View>
         <Text style={styles.textoInput}>Email</Text>
-        <TextInput style={styles.input} keyboardType='email-address'/>
+        <TextInput style={styles.input} value={email} onChangeText={
+          (e) => {setEmail(e)}
+        } keyboardType='email-address'/>
       </View>
       <View>
         <Text style={styles.textoInput}>Senha</Text>
-        <TextInput style={styles.input} secureTextEntry={true}/>
+        <TextInput style={styles.input} value={password} onChangeText={
+          (a) => {setPassword(a)}
+        } secureTextEntry={true}/>
       </View>
-      <TouchableOpacity style={styles.botaoLogin} onPress={homeAuth}>
+      <TouchableOpacity style={styles.botaoLogin} onPress={login}>
         <Text style={styles.textBotaoLogin}>Login</Text>
       </TouchableOpacity>
     </View>

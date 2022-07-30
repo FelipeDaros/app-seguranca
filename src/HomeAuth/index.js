@@ -1,10 +1,11 @@
 import { Text, View, StyleSheet, ScrollView, TouchableOpacity } from "react-native";
 import React, {useState} from "react";
+import axios from 'axios';
 
 export default function HomeAuth({navigation}){
 
   const [status, setStatus] = useState(0);
-
+  
   function ativo(){
     if(status == 0){
       setStatus(1);
@@ -18,6 +19,15 @@ export default function HomeAuth({navigation}){
     rotas: 4,
     proximo: 'Próximo TURNO 3H'
   }
+
+  function rondaPonto(){
+    navigation.navigate('RondaPonto')
+  }
+
+  function Ocorrencia(){
+    navigation.navigate('Ocorrencia')
+  }
+
   return(
     <View style={styles.container}>
       <Text>Vigia: {user.name}</Text>
@@ -27,8 +37,11 @@ export default function HomeAuth({navigation}){
       <TouchableOpacity style={styles.botao} onPress={ativo}>
         <Text style={styles.textoBotao}>Ativar Ronda</Text>
       </TouchableOpacity>
-      <TouchableOpacity style={styles.botao}>
+      <TouchableOpacity style={styles.botao} onPress={rondaPonto}>
         <Text style={styles.textoBotao}>Cadastrar um ponto</Text>
+      </TouchableOpacity>
+      <TouchableOpacity style={styles.botao} onPress={Ocorrencia}>
+        <Text style={styles.textoBotao}>Cadastrar Ocorrência</Text>
       </TouchableOpacity>
       <TouchableOpacity style={styles.botao}>
         <Text style={styles.textoBotao}>Mandar Localização</Text>

@@ -1,28 +1,40 @@
-import { Text, View, StyleSheet, TextInput, TouchableOpacity, Button, Alert } from "react-native";
+import { Text, View, StyleSheet, TextInput, TouchableOpacity, Alert, ActivityIndicator, } from "react-native";
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import React, {useState} from "react";
 import axios from 'axios';
+import CrudService from "../services/crudService";
 
 
 export default function Login({ navigation }){
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const crudService = new CrudService();
 
   async function login(){
-    console.log(email, password)
-
+    const data = await crudService.save('/users/signin',
+        {
+          email,
+          password
+        }
+      ).then(async (r) => {
+        const {id, name, jwtToken} = r.data;
+        await AsyncStorage.setItem("token", jwtToken);
+        await AsyncStorage.setItem("id", id);
+        await AsyncStorage.setItem("name", name);
+        if(jwtToken){
+          navigation.navigate("HomeAuth");
+        }
+      }).catch(e => {
+        navigation.navigate("Login");
+        Alert.alert(`Usuário ${email}`, 'Email ou senha incorretas');
+      })
     
-    await axios.post('https://backend-seguranca.herokuapp.com/api/users/signin', {
-      email,
-      password
-    }).then(r => {;
-      navigation.navigate('HomeAuth')
-    }).catch(r => {
-      Alert.alert('Usuário ou senha Inválida')
-    })
+    return data;  
   }
 
   return (
     <View style={styles.container}>
+      <ActivityIndicator color="black" size={40} />
       <Text style={styles.textoApp}>Segurança na Mão</Text>
       <View>
         <Text style={styles.textoInput}>Email</Text>

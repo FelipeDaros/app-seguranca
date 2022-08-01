@@ -1,14 +1,43 @@
-import { Text, View, StyleSheet, TextInput, Button, TouchableOpacity } from "react-native";
+import { Text, View, StyleSheet, TextInput, Button, TouchableOpacity, Pressable } from "react-native";
 import SelectDropdown from "react-native-select-dropdown";
 import React, { useState } from 'react';
-import axios from "axios";
 import * as ImagePicker from 'expo-image-picker';
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import CrudService from "../services/crudService";
+import DatePicker from "react-native-modern-datepicker";
+import { manipulateDate } from "../services/dateService";
+import dayjs from "dayjs";
+
 
 
 export default function Ocorrencia(){
-
+  const [resume, setResume] = useState('');
+  const [place, setPlace] = useState('');
+  const [type, setType] = useState('');
+  const [photo, setPhoto] = ('');
+  const [selectedDate, setSelectedDate] = useState('');
+  const [show, setShow] = useState(false);
   const tipos = ['Incêndio', 'Furto', 'Acidente de Trabalho', 'Acidente Carro'];
   const [pickedImagePath, setPickedImagePath] = useState('');
+  
+  function mostrarData(){
+    if(show == false){
+      setShow(true);
+    }else{
+      setShow(false);
+    }
+  }
+
+  const options = {
+    backgroundColor: '#090C08',
+    textHeaderColor: '#fff',
+    textDefaultColor: '#fff',
+    selectedTextColor: '#63C6FF',
+    mainColor: '#fff',
+    textSecondaryColor: '#fff',
+    borderColor: 'rgba(122, 146, 165, 0.1)'
+  }
+
 
   async function pegarFoto(){
     const permissionResult = await ImagePicker.requestMediaLibraryPermissionsAsync();
@@ -27,16 +56,29 @@ export default function Ocorrencia(){
       setPickedImagePath(result.uri);
       console.log(result.uri);
     }
+
+    setPhoto = result.uri
+
+    return result.uri;  
   }
 
-  async function salvar(){
-    await axios.post('https://backend-seguranca.herokuapp.com/api/users',
-      {
+  const crudService = new CrudService();
 
-      }
-    ).then(r => {
-      r.data;
+  async function salvar(){
+    const id = await AsyncStorage.getItem("id");
+    const name = await AsyncStorage.getItem("name");
+    console.log(type)
+    await crudService.save('/ocorrence', {
+      resume: resume,
+      user_id: id,
+      place: place,
+      type: type,
+      situation: 'Aberto',
+      date_occurrence: selectedDate,
+      current_time: "2016-06-22 19:10:25",
+	    photo: "SEM FOTO"
     })
+    
   }
 
   return(
@@ -47,23 +89,52 @@ export default function Ocorrencia(){
         multiline={true}
         style={styles.inputOcorrencia}
         placeholder="Descreva a ocorrência"
+        value={resume}
+        onChangeText={
+          (r) => {setResume(r)}
+        }
       />
       <Text style={styles.textoTitulo}>Local</Text>
-      <TextInput style={styles.inputOcorrencia}/>
+      <TextInput 
+        style={styles.inputOcorrencia}
+        value={place}
+        onChangeText={
+          (p) => {setPlace(p)}
+        }
+      />
 
       <Text style={styles.textoTitulo}>Tipo</Text>
       <SelectDropdown 
         data={tipos}
         onSelect={(selectItem, index) => {
           console.log(selectItem, index);
+          setType(selectItem)
         }}
-        buttonStyle={true}
+        defaultButtonText={type == '' ? 'Selecione a opcção' : type}      
       />
 
-      <TouchableOpacity style={styles.botaoFoto} onPress={pegarFoto}>
+      <TouchableOpacity style={styles.botaoFoto} onPress={pegarFoto}
+      data={photo}
+      >
         <Text>Adicionar foto</Text>
       </TouchableOpacity>
-
+      {show == true ? <Pressable style={styles.botaoAtivado} onPress={mostrarData}>
+        <Text style={styles.textoBotao}>Fechar data</Text>
+      </Pressable>
+      :
+      <Pressable style={styles.botao} onPress={mostrarData}>
+        <Text style={styles.textoBotao}>Mostrar Data</Text>
+      </Pressable>
+      }
+      {show == true ? 
+      <><DatePicker
+      onSelectedChange={date => setSelectedDate(date)}
+      options={options}
+      minuteInterval={5}
+      style={{ borderRadius: 10}}
+      /></> : 
+      <></>}
+      <TextInput value={selectedDate} style={{color: '#fff', fontSize: 18}}/>
       <TouchableOpacity style={styles.botao} onPress={salvar}>
         <Text style={styles.textoBotao}>Cadastrar</Text>
       </TouchableOpacity>
@@ -98,7 +169,16 @@ const styles = StyleSheet.create({
   botao: {
     height: 40,
     width: 140,
-    backgroundColor: '#3d916a',
+    backgroundColor: '#59b58a',
+    margin: 20,
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderRadius: 5
+  },
+  botaoAtivado: {
+    height: 40,
+    width: 140,
+    backgroundColor: '#ba1313',
     margin: 20,
     alignItems: 'center',
     justifyContent: 'center',

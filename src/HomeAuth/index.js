@@ -1,23 +1,63 @@
-import { Text, View, StyleSheet, ScrollView, TouchableOpacity } from "react-native";
-import React, {useState} from "react";
-import axios from 'axios';
+import { Text, View, StyleSheet, ScrollView, TouchableOpacity, ActivityIndicator, Alert } from "react-native";
+import React, {useState, useEffect} from "react";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import CrudService from "../services/crudService";
+import dayjs from "dayjs";
 
 export default function HomeAuth({navigation}){
-
-  const [status, setStatus] = useState(0);
+  const crudService = new CrudService();
+  const [status, setStatus] = useState('');
+  const [nome, setNome] = useState('');
   
-  function ativo(){
-    if(status == 0){
-      setStatus(1);
+  async function ativo(){
+    const id = await AsyncStorage.getItem("id");
+    const findUser = await crudService.findOne('/users/', id);
+
+    const { situation } = findUser.data;
+
+    if(situation === "I" && status == 'Inativo'){
+      crudService.update(`/users/${id}`, {
+        situation: 'A'
+      })
+      setStatus('Ativo');
+      
     }else{
-      setStatus(0);
+      crudService.update(`/users/${id}`, {
+        situation: 'I'
+      })
+      setStatus('Inativo');
     }
   }
 
-  const user = {
-    name: 'USUÁRIO',
-    rotas: 4,
-    proximo: 'Próximo TURNO 3H'
+  async function ativarPanico(){
+    const date = dayjs(Date.now());
+    const id = await AsyncStorage.getItem("id");
+    crudService.save('/panic',{
+      user_id: id,
+      stats: "ATIVO",
+      date: "01/08/202214:08:22"
+    }).then(() => {
+      Alert('Você ativou o botão do PÂNICO!');
+    })
+  }
+
+  useEffect(() => {
+    async function atualizar(){
+    const id = await AsyncStorage.getItem("id");
+    const data = await crudService.findOne('/users/', id);
+    const {name, situation} = data.data;
+
+    setNome(name);
+    }
+
+    atualizar();
+  })
+
+
+  async function sair(){
+    await AsyncStorage.multiRemove(["jwtToken", "id", "name"]).then(() => {
+      navigation.navigate("Login");
+    });
   }
 
   function rondaPonto(){
@@ -30,10 +70,8 @@ export default function HomeAuth({navigation}){
 
   return(
     <View style={styles.container}>
-      <Text>Vigia: {user.name}</Text>
-      <Text>Lugares: {user.rotas}</Text>
-      <Text>Turno: {user.proximo}</Text>
-      <Text>Ativo: {status}</Text>
+      <Text>Vigia: {nome}</Text>
+      <Text>Situação: {status}</Text>
       <TouchableOpacity style={styles.botao} onPress={ativo}>
         <Text style={styles.textoBotao}>Ativar Ronda</Text>
       </TouchableOpacity>
@@ -49,8 +87,11 @@ export default function HomeAuth({navigation}){
       <TouchableOpacity style={styles.botao}>
         <Text style={styles.textoBotao}>Alerta Vigia</Text>
       </TouchableOpacity>
-      <TouchableOpacity style={styles.botao}>
+      <TouchableOpacity style={styles.botao} onPress={ativarPanico}>
         <Text style={styles.textoBotao}>Botão Pânico</Text>
+      </TouchableOpacity>
+      <TouchableOpacity style={styles.botao} onPress={sair}>
+        <Text style={styles.textoBotao}>Sair</Text>
       </TouchableOpacity>
     </View>
   )
@@ -66,8 +107,8 @@ const styles = StyleSheet.create({
     alignItems: 'center'
   },
   botao: {
-    height: 60,
-    width: 200,
+    height: 45,
+    width: 220,
     backgroundColor: '#4da7db',
     margin: 20,
     alignItems: 'center',

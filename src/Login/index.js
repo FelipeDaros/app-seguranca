@@ -1,8 +1,9 @@
-import { Text, View, StyleSheet, TextInput, TouchableOpacity, Alert, ActivityIndicator, } from "react-native";
+import { Text, View, StyleSheet, TextInput, TouchableOpacity, Alert, Image } from "react-native";
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import React, {useState} from "react";
 import axios from 'axios';
 import CrudService from "../services/crudService";
+import eskimoIcone from '../../assets/logo.png'
 
 
 export default function Login({ navigation }){
@@ -34,7 +35,10 @@ export default function Login({ navigation }){
 
   return (
     <View style={styles.container}>
-      <ActivityIndicator color="black" size={40} />
+      <Image 
+        source={eskimoIcone}
+        style={{width: 220, height: 119, marginBottom: 15}}
+      />
       <Text style={styles.textoApp}>Segurança na Mão</Text>
       <View>
         <Text style={styles.textoInput}>Email</Text>
@@ -58,7 +62,7 @@ export default function Login({ navigation }){
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#63C6FF',
+    backgroundColor: '#d13f3f',
     alignItems: 'center',
     justifyContent: 'center',
   },

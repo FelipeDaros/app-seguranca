@@ -1,8 +1,15 @@
-import { Text, View, StyleSheet, ScrollView, TouchableOpacity, ActivityIndicator, Alert } from "react-native";
+import { Text, View, StyleSheet, ScrollView, TouchableOpacity, ActivityIndicator, Alert, Image } from "react-native";
 import React, {useState, useEffect} from "react";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import CrudService from "../services/crudService";
 import dayjs from "dayjs";
+import alertaIcone from '../../assets/emergency-icon.webp';
+import salvarPontoIcone from '../../assets/checkmark-map-location-icon.webp';
+import localizacaoIcone from '../../assets/location-information-icon.png';
+import rondaIcone from '../../assets/security-guard-icon.png';
+import cadastrarOcorrenciaIcone from '../../assets/enrollment-icon.png';
+import alertaVigiaIcone from '../../assets/checkmark-bell-notification-icon.webp';
+
 
 export default function HomeAuth({navigation}){
   const crudService = new CrudService();
@@ -37,7 +44,9 @@ export default function HomeAuth({navigation}){
       stats: "ATIVO",
       date: "01/08/202214:08:22"
     }).then(() => {
-      Alert('Você ativou o botão do PÂNICO!');
+      Alert.alert('Você ativou o botão do PÂNICO!', 'ALERTA PÂNICO');
+    }).catch(err => {
+      console.log(err);
     })
   }
 
@@ -72,24 +81,55 @@ export default function HomeAuth({navigation}){
     <View style={styles.container}>
       <Text>Vigia: {nome}</Text>
       <Text>Situação: {status}</Text>
-      <TouchableOpacity style={styles.botao} onPress={ativo}>
-        <Text style={styles.textoBotao}>Ativar Ronda</Text>
-      </TouchableOpacity>
-      <TouchableOpacity style={styles.botao} onPress={rondaPonto}>
-        <Text style={styles.textoBotao}>Cadastrar um ponto</Text>
-      </TouchableOpacity>
-      <TouchableOpacity style={styles.botao} onPress={Ocorrencia}>
-        <Text style={styles.textoBotao}>Cadastrar Ocorrência</Text>
-      </TouchableOpacity>
-      <TouchableOpacity style={styles.botao}>
-        <Text style={styles.textoBotao}>Mandar Localização</Text>
-      </TouchableOpacity>
-      <TouchableOpacity style={styles.botao}>
-        <Text style={styles.textoBotao}>Alerta Vigia</Text>
-      </TouchableOpacity>
-      <TouchableOpacity style={styles.botao} onPress={ativarPanico}>
+      <View style={styles.menuRow}>
+        <TouchableOpacity style={styles.botao} onPress={ativo}>
+        <Image
+            style={styles.icone}
+            source={rondaIcone}
+          />
+          <Text style={styles.textoBotao}>Ativar Ronda</Text>
+        </TouchableOpacity>
+        <TouchableOpacity style={styles.botao} onPress={rondaPonto}>
+        <Image
+            style={styles.icone}
+            source={salvarPontoIcone}
+          />
+          <Text style={styles.textoBotao}>Cadastrar um ponto</Text>
+        </TouchableOpacity>
+      </View>
+      <View style={styles.menuRow}>
+        <TouchableOpacity style={styles.botao} onPress={Ocorrencia}>
+        <Image
+            style={styles.icone}
+            source={cadastrarOcorrenciaIcone}
+          />
+          <Text style={styles.textoBotao}>Cadastrar Ocorrência</Text>
+        </TouchableOpacity>
+        <TouchableOpacity style={styles.botao}>
+        <Image
+            style={styles.icone}
+            source={localizacaoIcone}
+          />
+          <Text style={styles.textoBotao}>Mandar Localização</Text>
+        </TouchableOpacity>
+      </View>
+      <View style={styles.menuRow}>
+        <TouchableOpacity style={styles.botao}>
+          <Image
+            style={styles.icone}
+            source={alertaVigiaIcone}
+          />
+          <Text style={styles.textoBotao}>Alerta Vigia</Text>
+        </TouchableOpacity>
+        <TouchableOpacity style={styles.botao} onPress={ativarPanico}>
+        <Image
+            style={styles.icone}
+            source={alertaIcone}
+          />
         <Text style={styles.textoBotao}>Botão Pânico</Text>
       </TouchableOpacity>
+      </View>
+
       <TouchableOpacity style={styles.botao} onPress={sair}>
         <Text style={styles.textoBotao}>Sair</Text>
       </TouchableOpacity>
@@ -106,9 +146,14 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center'
   },
+  menuRow:{
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+  },
   botao: {
-    height: 45,
-    width: 220,
+    height: 100,
+    width: 150,
     backgroundColor: '#4da7db',
     margin: 20,
     alignItems: 'center',
@@ -117,7 +162,11 @@ const styles = StyleSheet.create({
   },
   textoBotao: {
     textAlign: 'center',
-    fontSize: 20,
+    fontSize: 14,
     color: '#fff'
+  },
+  icone: {
+    height: 70, 
+    width: 70
   }
 });

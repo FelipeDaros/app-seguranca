@@ -23,10 +23,10 @@ export default function Login({ navigation }){
         await AsyncStorage.setItem("id", id);
         await AsyncStorage.setItem("name", name);
         if(jwtToken){
-          navigation.navigate("HomeAuth");
+          await navigation.navigate("HomeAuth");
         }
-      }).catch(e => {
-        navigation.navigate("Login");
+      }).catch(async (e) => {
+        await navigation.navigate("Login");
         Alert.alert(`Usuário ${email}`, 'Email ou senha incorretas');
       })
     
@@ -88,8 +88,8 @@ const styles = StyleSheet.create({
   },
   botaoLogin: {
     justifyContent: 'center',
-    backgroundColor: '#000',
-    height: 30,
+    backgroundColor: '#545252',
+    height: 40,
     width: 100,
     borderRadius: 5,
     marginTop: 20

@@ -1,4 +1,4 @@
-import { Text, View, StyleSheet, ScrollView, TouchableOpacity, ActivityIndicator, Alert, Image } from "react-native";
+import { Text, View, StyleSheet, ScrollView, TouchableOpacity, Vibration, Alert, Image } from "react-native";
 import React, {useState, useEffect} from "react";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import CrudService from "../services/crudService";
@@ -15,6 +15,7 @@ export default function HomeAuth({navigation}){
   const crudService = new CrudService();
   const [status, setStatus] = useState('');
   const [nome, setNome] = useState('');
+  const ONE_SECOND_IN_MS = 500;
   
   async function ativo(){
     const id = await AsyncStorage.getItem("id");
@@ -45,6 +46,7 @@ export default function HomeAuth({navigation}){
       date: "01/08/202214:08:22"
     }).then(() => {
       Alert.alert('Você ativou o botão do PÂNICO!', 'ALERTA PÂNICO');
+      Vibration.vibrate(1*ONE_SECOND_IN_MS);
     }).catch(err => {
       console.log(err);
     })
@@ -55,7 +57,7 @@ export default function HomeAuth({navigation}){
     const id = await AsyncStorage.getItem("id");
     const data = await crudService.findOne('/users/', id);
     const {name, situation} = data.data;
-
+     
     setNome(name);
     }
 
@@ -87,7 +89,7 @@ export default function HomeAuth({navigation}){
             style={styles.icone}
             source={rondaIcone}
           />
-          <Text style={styles.textoBotao}>Ativar Ronda</Text>
+          {status == 'Ativo' ? <Text style={styles.textoBotaoAtivoRonda}>Desativar Ronda</Text> : <Text style={styles.textoBotao}>Ativar Ronda</Text>}
         </TouchableOpacity>
         <TouchableOpacity style={styles.botao} onPress={rondaPonto}>
         <Image
@@ -130,7 +132,7 @@ export default function HomeAuth({navigation}){
       </TouchableOpacity>
       </View>
 
-      <TouchableOpacity style={styles.botao} onPress={sair}>
+      <TouchableOpacity style={styles.botaoSair} onPress={sair}>
         <Text style={styles.textoBotao}>Sair</Text>
       </TouchableOpacity>
     </View>
@@ -142,7 +144,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     marginTop: 0,
-    backgroundColor: '#63C6FF',
+    backgroundColor: '#d13f3f',
     justifyContent: 'center',
     alignItems: 'center'
   },
@@ -154,7 +156,7 @@ const styles = StyleSheet.create({
   botao: {
     height: 100,
     width: 150,
-    backgroundColor: '#4da7db',
+    backgroundColor: 'rgba(255, 255, 255, 0.08)',
     margin: 20,
     alignItems: 'center',
     justifyContent: 'center',
@@ -168,5 +170,19 @@ const styles = StyleSheet.create({
   icone: {
     height: 70, 
     width: 70
-  }
+  },
+  botaoSair: {
+    height: 40,
+    width: 80,
+    backgroundColor: '#545252',
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderRadius: 5,
+    marginTop: 20
+  },
+  textoBotaoAtivoRonda: {
+    textAlign: 'center',
+    fontSize: 14,
+    color: 'red'
+  },
 });

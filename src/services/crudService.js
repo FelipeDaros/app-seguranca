@@ -31,6 +31,15 @@ export default class CrudService{
     })
   }
 
+  async findAllRoundUser(rota, data){
+    const token = await AsyncStorage.getItem("token");
+    return api.get(rota, data,{
+      headers: {
+        'Authorization': `Basic ${token}`
+      }
+    })
+  }
+
   async findOne(rota, id){
     const token = await AsyncStorage.getItem("token");
     return api.get(`${rota}${id}`, {

@@ -7,7 +7,7 @@ import iconeRefresh from '../../assets/refresh-icon-10853.png';
 export default function RondaListaPonto() {
 
   const [data, setData] = useState('');
-  const [dados, setDados] = useState('');
+  const [dados, setDados] = useState([]);
 
   
 
@@ -29,15 +29,11 @@ export default function RondaListaPonto() {
     t.map((e) => {
       Object.values(e).forEach(item =>{
         setDados(item)
-        console.log(dados.user_id);
+        console.log(dados);
       });
     })
 
     return
-  }
-
-  function teste(){
-    console.log(dados);
   }
 
 
@@ -50,13 +46,12 @@ export default function RondaListaPonto() {
           style={{height: 70, width: 150}}
         />
       </TouchableOpacity>
-      <TouchableOpacity onPress={teste} style={{margin:30}}>
-        <Image 
-          source={iconeRefresh}
-          style={{height: 70, width: 150}}
-        />
-      </TouchableOpacity>
-      <Text>{dados.id}</Text>
+      {dados <= (dados.length == 0) 
+      ? <Text>Vazio!</Text>
+      : <View key={dados.id}>
+          <Text>{dados.id+' '+dados.data+' '+dados.stats}</Text>
+        </View>
+      }
     </View>
   )
 }

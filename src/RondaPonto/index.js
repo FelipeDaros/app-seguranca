@@ -1,4 +1,4 @@
-import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import { Alert, StyleSheet, Text, TextInput, TouchableOpacity, View } from "react-native";
 import React, { useState, useEffect } from 'react';
 import * as Location from 'expo-location';
 import axios from 'axios';
@@ -8,6 +8,7 @@ export default function RondaPonto({ navigation }){
 
   const [location, setLocation] = useState(null);
   const [errorMsg, setErrorMsg] = useState(null);
+  const [textoSetor, setTextoSetor] = useState('');
 
   function localizacao(){
     (async () => {
@@ -26,9 +27,11 @@ export default function RondaPonto({ navigation }){
       {
       latitude: String(coords.latitude),
       longitude: String(coords.longitude),
-      locale: "teste"
+      locale: textoSetor.toUpperCase()
       }).then(r => {
-        console.log(r.data);
+        setLocation(null);
+        setTextoSetor('');
+        Alert.alert('Ponto Cadastrado!', 'Você acabou de cadastrar o ponto no setor '+textoSetor);
       }).catch((err) => {
         console.log(err)
       })
@@ -38,6 +41,8 @@ export default function RondaPonto({ navigation }){
     <View style={styles.container}>
       <Text style={styles.textoPonto}>Cadastro Ponto</Text>
       <Text style={styles.textoInformacao}>Para utilizar o cadastro do ponto você terá que ir até o local desejado e apertar para cadastrar, após o cadastro você poderá imprimir o QRCODE gerado para fixar no local do ponto cadastrado.</Text>
+      <Text style={styles.textoSetor}>Informe o setor</Text>
+      <TextInput style={styles.input} value={textoSetor} onChangeText={e => setTextoSetor(e)}/>
       <TouchableOpacity style={styles.botao} onPress={localizacao}>
         <Text style={styles.textoBotao}>Cadastrar</Text>
       </TouchableOpacity>
@@ -78,4 +83,17 @@ const styles = StyleSheet.create({
     fontSize: 18,
     color: '#fff'
   },
+  input: {
+    width: 200,
+    height: 30,
+    backgroundColor: '#fff',
+    margin: 15,
+    borderRadius: 5,
+    textAlign: 'center'
+  },
+  textoSetor: {
+    color: '#fff', 
+    fontWeight: 'bold', 
+    fontSize: 16
+  }
 });

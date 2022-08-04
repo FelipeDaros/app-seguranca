@@ -3,7 +3,6 @@ import { useEffect, useState } from "react";
 import { View, Text, StyleSheet, FlatList, Button, TouchableOpacity, Image, Alert } from "react-native";
 import CrudService from '../services/crudService';
 import iconeRefresh from '../../assets/refresh-icon-10853.png';
-import { BarCodeScanner } from 'expo-barcode-scanner';
 import IconeOff from '../../assets/icons8-off-47.png';
 import IconeOn from '../../assets/icons8-on-47.png';
 

@@ -31,6 +31,10 @@ export default function HomeAuth({navigation}){
     if(situation === "I" && status == 'Inativo'){
       crudService.update(`/users/${id}`, {
         situation: 'A'
+      }).then(() => {
+
+      }).catch(e => {
+        console.log(e)
       })
       setStatus('Ativo');
       Alert.alert("Você ativou a ronda!", "Você pode efetuar sua ronda");

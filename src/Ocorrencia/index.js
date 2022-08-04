@@ -5,7 +5,6 @@ import * as ImagePicker from 'expo-image-picker';
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import CrudService from "../services/crudService";
 import DatePicker from "react-native-modern-datepicker";
-import { manipulateDate } from "../services/dateService";
 import dayjs from "dayjs";
 
 
@@ -67,7 +66,7 @@ export default function Ocorrencia(){
   async function salvar(){
     const id = await AsyncStorage.getItem("id");
     const name = await AsyncStorage.getItem("name");
-    console.log(type)
+    const dataAtual = dayjs().format('YYYY/MM/DD | HH:mm:ss')
     await crudService.save('/ocorrence', {
       resume: resume,
       user_id: id,
@@ -75,8 +74,14 @@ export default function Ocorrencia(){
       type: type,
       situation: 'Aberto',
       date_occurrence: selectedDate,
-      current_time: "2016-06-22 19:10:25",
+      current_time: String(dataAtual),
 	    photo: "SEM FOTO"
+    }).then(() => {
+      setPickedImagePath('');
+      setPlace('');
+      setResume('');
+      setSelectedDate('')
+      setType('');
     })
     
   }

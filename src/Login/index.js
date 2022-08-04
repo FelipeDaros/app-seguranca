@@ -21,6 +21,7 @@ export default function Login({ navigation }){
         await AsyncStorage.setItem("token", jwtToken);
         await AsyncStorage.setItem("id", id);
         await AsyncStorage.setItem("name", name);
+        console.log(r.data)
         if(jwtToken){
           await navigation.navigate("HomeAuth");
         }

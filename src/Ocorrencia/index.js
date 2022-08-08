@@ -65,16 +65,14 @@ export default function Ocorrencia(){
 
   async function salvar(){
     const id = await AsyncStorage.getItem("id");
-    const name = await AsyncStorage.getItem("name");
-    const dataAtual = dayjs().format('YYYY/MM/DD | HH:mm:ss')
     await crudService.save('/ocorrence', {
       resume: resume,
       user_id: id,
       place: place,
       type: type,
-      situation: 'Aberto',
-      date_occurrence: selectedDate,
-      current_time: String(dataAtual),
+      stats: 1,
+      date_occurrence: selectedDate.replace('/', '-'),
+      current_time: dayjs().format(),
 	    photo: "SEM FOTO"
     }).then(() => {
       setPickedImagePath('');

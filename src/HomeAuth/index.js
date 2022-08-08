@@ -22,31 +22,6 @@ export default function HomeAuth({navigation}){
   const [nome, setNome] = useState('');
   const ONE_SECOND_IN_MS = 500;
   
-  async function ativo(){
-    const id = await AsyncStorage.getItem("id");
-    const findUser = await crudService.findOne('/users/', id);
-
-    const { situation } = findUser.data;
-
-    if(situation === "I" && status == 'Inativo'){
-      crudService.update(`/users/${id}`, {
-        situation: 'A'
-      }).then(() => {
-
-      }).catch(e => {
-        console.log(e)
-      })
-      setStatus('Ativo');
-      Alert.alert("Você ativou a ronda!", "Você pode efetuar sua ronda");
-    }else{
-      crudService.update(`/users/${id}`, {
-        situation: 'I'
-      })
-      setStatus('Inativo');
-      Alert.alert("Você desativou a ronda!", "Volte para a guarita imediatamente");
-    }
-  }
-
   async function mandarLocalizacao(){
     
     let { status } = await Location.requestForegroundPermissionsAsync();
@@ -59,9 +34,7 @@ export default function HomeAuth({navigation}){
     setLocation(location);
     const {latitude, longitude} = location.coords;
     const user_id = await AsyncStorage.getItem("id");
-    const dataAtual = dayjs().format('YYYY/MM/DD | HH:mm:ss')
-
-    console.log(dataAtual)
+    const dataAtual = dayjs().format('YYYY-MM-DD HH:mm:ss')
 
     crudService.save('/location', {
       latitude: String(latitude),
@@ -82,8 +55,8 @@ export default function HomeAuth({navigation}){
     const id = await AsyncStorage.getItem("id");
     crudService.save('/panic',{
       user_id: id,
-      stats: "ATIVO",
-      date: "01/08/202214:08:22"
+      stats: 1,
+      date: dayjs().format('YYYY-MM-DD HH:mm:ss')
     }).then(() => {
       Alert.alert('Você ativou o botão do PÂNICO!', 'ALERTA PÂNICO');
       Vibration.vibrate(1*ONE_SECOND_IN_MS);
@@ -131,32 +104,13 @@ export default function HomeAuth({navigation}){
       />
       <Text style={styles.texto}>Vigia: {nome}</Text>
       <Text style={styles.texto}>Situação: {status}</Text>
-      <View style={styles.menuRow}>
-        <TouchableOpacity style={styles.botao} onPress={ativo}>
+      <TouchableOpacity style={styles.botao} onPress={rondaPonto}>
         <Image
-            style={styles.icone}
-            source={rondaIcone}
-          />
-          {status == 'Ativo' ? <Text style={styles.textoBotaoAtivoRonda}>Desativar Ronda</Text> : <Text style={styles.textoBotao}>Ativar Ronda</Text>}
-        </TouchableOpacity>
-        {status == 'Ativo' ? 
-        <TouchableOpacity style={styles.botaoRondaAtivo} onPress={rondaListaPonto}>
-        <Image
-            style={{width: 60, height: 50}}
-            source={iconeLupa}
-          />
-          <Text style={styles.textoBotao}>Pontos da Ronda</Text>
-        </TouchableOpacity>
-        :
-        <TouchableOpacity style={styles.botao} onPress={rondaPonto}>
-        <Image
-            style={styles.icone}
-            source={salvarPontoIcone}
-          />
-          <Text style={styles.textoBotao}>Cadastrar um ponto</Text>
-        </TouchableOpacity>
-        }
-      </View>
+          style={styles.icone}
+          source={salvarPontoIcone}
+        />
+        <Text style={styles.textoBotao}>Cadastrar um ponto</Text>
+      </TouchableOpacity>
       <View style={styles.menuRow}>
         <TouchableOpacity style={styles.botao} onPress={Ocorrencia}>
         <Image

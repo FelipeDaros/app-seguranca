@@ -19,14 +19,19 @@ export default function Login({ navigation }) {
   async function searchLatestCheckList(){
     await crudService.findAll('/service-day/latest').then((r) => {
       setDados(r.data);
+      t.map(i => {
+        setItens(i.itens)
+      })
     }).catch(e => {
       console.log(e)
     })
-    setItens(t.map(i => {
-      i.itens
-      console.log(i.itens);
-    }))
   }
+
+  const listItens = ({item}) => (
+    <View>
+      <Text style={styles.textoChekList}>{item.name}</Text>
+    </View>
+  )
 
   return (
     <View style={styles.container}>
@@ -36,6 +41,10 @@ export default function Login({ navigation }) {
         <Text style={styles.textoContainer}>Local: {dados.post_id.name}</Text>
         <Text style={styles.textoContainer}>Último posto {dados.created_at}</Text>
         <Text style={styles.textoContainer}>{dados.report_reading == 1 ? <Text>Foi confirmado que foi lido</Text>: <Text>Não foi confirmado que foi lido</Text>}</Text>
+        <FlatList 
+          data={itens}
+          renderItem={listItens}
+        />
       </View>
       }
       <CheckBox
@@ -72,5 +81,10 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     color: '#fff',
     textAlign: 'center'
+  },
+  textoChekList: {
+    fontStyle: 'italic',
+    fontSize: 14,
+    color: 'blue'
   }
 });

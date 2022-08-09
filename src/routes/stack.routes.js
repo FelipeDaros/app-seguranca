@@ -11,8 +11,8 @@ const { Screen, Navigator } = createNativeStackNavigator();
 export function StackRoutes(){
   return(
     <Navigator screenOptions={{headerShown: false}}>
-      <Screen name="CheckList" component={CheckList}/>
       <Screen name="Login" component={Login}/>
+      <Screen name="CheckList" component={CheckList}/>
       <Screen name="RondaPonto" component={RondaPonto}/>
       <Screen name="HomeAuth" component={HomeAuth}/>
       <Screen name="Ocorrencia" component={Ocorrencia}/>

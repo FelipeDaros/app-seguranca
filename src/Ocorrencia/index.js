@@ -150,21 +150,21 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     marginTop: 0,
-    backgroundColor: '#d13f3f',
+    backgroundColor: '#4889BF',
     justifyContent: 'center',
     alignItems: 'center'
   },
   textoPrincipal: {
     fontSize: 30,
-    color: '#fff'
+    color: '#CEE0EF'
   },
   textoTitulo:{
-    color: '#fff',
+    color: '#CEE0EF',
     fontSize: 22,
     margin: 20
   },
   inputOcorrencia: {
-    backgroundColor: '#fff',
+    backgroundColor: '#CEE0EF',
     width: 300,
     height: 'auto',
     borderRadius: 5
@@ -189,12 +189,12 @@ const styles = StyleSheet.create({
   },
   textoBotao:{
     fontSize: 18,
-    color: '#fff'
+    color: '#CEE0EF'
   },
   botaoFoto: {
     width: 100,
     height: 40,
-    backgroundColor: '#fff',
+    backgroundColor: '#CEE0EF',
     justifyContent: 'center',
     alignItems: 'center',
     borderRadius: 5,

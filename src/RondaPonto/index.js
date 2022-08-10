@@ -55,19 +55,19 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     marginTop: 0,
-    backgroundColor: '#d13f3f',
+    backgroundColor: '#4889BF',
     justifyContent: 'center',
     alignItems: 'center'
   },
   textoPonto: {
     textAlign: 'center',
     fontSize: 30,
-    color: '#fff'
+    color: '#CEE0EF'
   },
   textoInformacao:{
     textAlign: 'center',
     width: 350,
-    color: '#fff',
+    color: '#CEE0EF',
     margin: 30
   },
   botao: {
@@ -81,18 +81,18 @@ const styles = StyleSheet.create({
   },
   textoBotao:{
     fontSize: 18,
-    color: '#fff'
+    color: '#CEE0EF'
   },
   input: {
     width: 200,
     height: 30,
-    backgroundColor: '#fff',
+    backgroundColor: '#CEE0EF',
     margin: 15,
     borderRadius: 5,
     textAlign: 'center'
   },
   textoSetor: {
-    color: '#fff', 
+    color: '#CEE0EF', 
     fontWeight: 'bold', 
     fontSize: 16
   }

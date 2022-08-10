@@ -61,7 +61,7 @@ export default function Login({ navigation }){
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#d13f3f',
+    backgroundColor: '#4889BF',
     alignItems: 'center',
     justifyContent: 'center',
   },
@@ -87,7 +87,7 @@ const styles = StyleSheet.create({
   },
   botaoLogin: {
     justifyContent: 'center',
-    backgroundColor: '#545252',
+    backgroundColor: '#3B76A7',
     height: 40,
     width: 100,
     borderRadius: 5,

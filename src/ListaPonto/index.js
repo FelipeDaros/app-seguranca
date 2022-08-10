@@ -87,13 +87,13 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     marginTop: 0,
-    backgroundColor: '#d13f3f',
+    backgroundColor: '#4889BF',
     justifyContent: 'center',
     alignItems: 'center'
   },
   textoTitulo:{
     fontSize: 20, 
-    color: '#fff', 
+    color: '#CEE0EF', 
     fontWeight: 'bold', 
     margin: 25
   },
@@ -115,7 +115,7 @@ const styles = StyleSheet.create({
   },
   itemTexto: {
     margin: 5,
-    color: '#fff',
+    color: '#CEE0EF',
     fontSize: 14,
     fontWeight: 'bold',
     textAlign: 'center'
@@ -129,7 +129,7 @@ const styles = StyleSheet.create({
   },
   textoAtualizar: {
     fontSize: 18,
-    color: '#000',
+    color: '#CEE0EF',
     fontWeight: 'bold'
   },
   icone: {

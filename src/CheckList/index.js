@@ -2,6 +2,10 @@ import { View, StyleSheet, Text, Button, FlatList, TouchableOpacity, Alert  } fr
 import React, { useEffect, useState } from "react";
 import Checkbox from 'expo-checkbox';
 import CrudService from "../services/crudService";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import dayjs from "dayjs";
+
+
 
 
 export default function Login({ navigation }) {
@@ -9,7 +13,7 @@ export default function Login({ navigation }) {
   const [checkIten, setCheckIten] = useState([]);
   const [dados, setDados] = useState(['']);
   const [itens, setItens] = useState([]);
-  const crudService = new CrudService;
+  const crudService = new CrudService()
 
   var t = [dados];
 
@@ -20,9 +24,7 @@ export default function Login({ navigation }) {
   async function searchLatestCheckList(){
     await crudService.findAll('/service-day/latest').then((r) => {
       setDados(r.data);
-      t.map(i => {
-        setItens(i.itens)
-      })
+      buscarItens();
     }).catch(e => {
       console.log(e)
     })
@@ -39,7 +41,25 @@ export default function Login({ navigation }) {
       Alert.alert("Leitura do relatório", "Você não confirmou a leitura do relatório deseja proseguir ?", [
         {
           text: 'Aceitar',
-          onPress: async () => {await navigation.navigate("HomeAuth")}
+          onPress: async () => {
+            const id = await AsyncStorage.getItem("id");
+            var nameItens = [];
+
+            itens.map(e => nameItens.push(e.name));
+            await crudService.save("/service-day", {
+              user_id: id,
+              itens: nameItens,
+              post_id: "2850c05f-54ee-483c-959d-252cf2e51e40",
+              created_at: dayjs().format(),
+              report_reading: checkBoxLeitura == true ? 1 : 0
+            }).then(async (e) => {
+              console.log(e.data)
+              await navigation.navigate("HomeAuth")
+            }).catch(e => {
+              console.log(e);
+              return
+            })
+          }
         },
         {
           text: 'Cancelar',
@@ -55,11 +75,11 @@ export default function Login({ navigation }) {
   const listAllItens = ({item, index}) => (
     <View style={styles.continerCheckBoxRow}>
       <Checkbox
-        value={checkIten.find(iten => iten === item.id ? true : false)}
+        value={checkIten.find(iten => iten.id === item.id ? true : false)}
         key={item.id}
-        color={setCheckIten ? '#CEE0EF' : '#000'}
+        color={setCheckIten ? '#000' : '#CEE0EF'}
         onValueChange={() => {
-          handleListTap(item.id)
+          handleListTap(item)
         }}
       />
       <Text style={styles.textoCheckBox}>{item.name}</Text>

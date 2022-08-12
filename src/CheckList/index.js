@@ -11,7 +11,7 @@ import dayjs from "dayjs";
 export default function Login({ navigation }) {
   const [checkBoxLeitura, setCheckLeitura] = useState(false);
   const [checkIten, setCheckIten] = useState([]);
-  const [dados, setDados] = useState(['']);
+  const [dados, setDados] = useState([]);
   const [itens, setItens] = useState([]);
   const crudService = new CrudService()
 
@@ -19,16 +19,24 @@ export default function Login({ navigation }) {
 
   useEffect(() => {
     searchLatestCheckList();
+    
   }, [])
 
   async function searchLatestCheckList(){
-    await crudService.findAll('/service-day/latest').then((r) => {
+    /*await crudService.findAll('/service-day/latest').then((r) => {
       setDados(r.data);
-      buscarItens();
     }).catch(e => {
       console.log(e)
-    })
+    })*/
+    try {
+      const response = await crudService.findAll('/service-day/latest');
+      setDados(response.data);
+    } catch (error) {
+      console.log(error);
+    }
   }
+
+  
 
   const listItens = ({item}) => (
     <View>

@@ -1,4 +1,4 @@
-import { View, StyleSheet, Text, Button, FlatList, TouchableOpacity, Alert  } from "react-native";
+import { View, StyleSheet, Text, Button, FlatList, TouchableOpacity, Alert, ScrollView  } from "react-native";
 import React, { useEffect, useState } from "react";
 import Checkbox from 'expo-checkbox';
 import CrudService from "../services/crudService";
@@ -9,40 +9,41 @@ import dayjs from "dayjs";
 
 
 export default function Login({ navigation }) {
-  const [checkBoxLeitura, setCheckLeitura] = useState(false);
+  const [checkBoxLeitura, setcheckBoxLeitura] = useState(false);
   const [checkIten, setCheckIten] = useState([]);
   const [dados, setDados] = useState([]);
+  const [itensAnterior, setItensAnterior] = useState([]);
   const [itens, setItens] = useState([]);
-  const crudService = new CrudService()
+  const crudService = new CrudService();
 
   var t = [dados];
 
   useEffect(() => {
     searchLatestCheckList();
-    
+    itensAPI();
   }, [])
 
   async function searchLatestCheckList(){
-    /*await crudService.findAll('/service-day/latest').then((r) => {
-      setDados(r.data);
-    }).catch(e => {
-      console.log(e)
-    })*/
     try {
       const response = await crudService.findAll('/service-day/latest');
       setDados(response.data);
+
     } catch (error) {
       console.log(error);
     }
   }
 
-  
-
-  const listItens = ({item}) => (
-    <View>
-      <Text style={styles.textoCheckBox}>{item.name}</Text>
-    </View>
-  )
+  const itensAPI = async() => {
+    try {
+      const response = await crudService.findAll('service-day/itens');
+      setItens(response.data);
+      t.map(e => {
+        setItensAnterior(e.itens);
+      })
+    } catch (error) {
+      
+    }
+  }
 
   const startDayService = async () => {
     if(checkBoxLeitura == false){
@@ -53,7 +54,7 @@ export default function Login({ navigation }) {
             const id = await AsyncStorage.getItem("id");
             var nameItens = [];
 
-            itens.map(e => nameItens.push(e.name));
+            checkIten.map(e => nameItens.push(e.name));
             await crudService.save("/service-day", {
               user_id: id,
               itens: nameItens,
@@ -76,12 +77,28 @@ export default function Login({ navigation }) {
       ])
     }
     if(checkBoxLeitura == true){
+      const id = await AsyncStorage.getItem("id");
+      var nameItens = [];
+      checkIten.map(e => nameItens.push(e.name));
+      await crudService.save("/service-day", {
+        user_id: id,
+        itens: nameItens,
+        post_id: "2850c05f-54ee-483c-959d-252cf2e51e40",
+        created_at: dayjs().format(),
+        report_reading: checkBoxLeitura == true ? 1 : 0
+      }).then(async (e) => {
+        console.log(e.data)
+        await navigation.navigate("HomeAuth")
+      }).catch(e => {
+        console.log(e);
+        return
+      })
       await navigation.navigate("HomeAuth")
     }
   }
 
   const listAllItens = ({item, index}) => (
-    <View style={styles.continerCheckBoxRow}>
+    <View style={styles.checkList}>
       <Checkbox
         value={checkIten.find(iten => iten.id === item.id ? true : false)}
         key={item.id}
@@ -91,6 +108,12 @@ export default function Login({ navigation }) {
         }}
       />
       <Text style={styles.textoCheckBox}>{item.name}</Text>
+    </View>
+  )
+
+  const listarItensAnterior = ({item}) => (
+    <View>
+      <Text style={styles.textoCheckListAnterior}>{item.name}</Text>
     </View>
   )
 
@@ -107,103 +130,96 @@ export default function Login({ navigation }) {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.textoContainer}>CHECK LIST</Text>
-      {dados <= (dados.length == 0) ? <></> :
-        
-        <View style={styles.containerCheckList}>
-          <Text style={styles.textoContainer}>Marque os equipamentos</Text>
-          <View style={styles.containerCheckListItens}>
+      <View style={styles.containerSuperior}>
+        <Text style={styles.textoRelatorio}>INFORMAÇÕES DO RELATÓRIO ANTERIOR</Text>
+        <Text>{dados.created_at}</Text>
+        {dados.report_reading === 1 ? <Text>FOI CONFIRMADO A LEITURA DO RELATÓRIO</Text> : 
+        <Text>NÃO FOI CONFIRMADO A LEITURA DO RELATÓRIO</Text>}
+        <FlatList
+          data={itensAnterior}
+          renderItem={listarItensAnterior}
+        />
+        <Button title="Atualizar" onPress={itensAPI}/>
+      </View>
+       <View style={styles.checkListContainer}>
+        <Text>CHECK LIST DOS EQUIPAMENTOS</Text>
           <FlatList 
             data={itens}
             renderItem={listAllItens}
-            keyExtractor={(item) => item.id}
-            />
-          </View>
-          <Text style={styles.textoContainer}>Equipamentos do Vigilante Anterior</Text>
-          <FlatList 
-          data={itens}
-          renderItem={listItens}
           />
-        <Text style={styles.textoContainer}>Local: {dados.post_id.name}</Text>
-        <Text style={styles.textoContainer}>Último posto {dados.created_at}</Text>
-        <Text style={styles.textoContainer}>{dados.report_reading == 1 ? <Text>Foi confirmado que foi lido</Text>: <Text>Não foi confirmado que foi lido</Text>}</Text>
-        <View style={styles.containerCheckBox}>
-          <Text>Concordo que li o relatório</Text>
-          <Checkbox 
-            value={checkBoxLeitura}
-            onValueChange={setCheckLeitura}
-            style={{marginTop: 20}}
-          />
-        </View>
-        
-        <TouchableOpacity style={styles.botao} onPress={startDayService}>
-          <Text style={styles.textoBotao}>Iniciar</Text>
-        </TouchableOpacity>
-      </View>
-      }
-      
+       </View>
+       <Text style={styles.checkConfirm}>Confirmar leitura do relatório anterior</Text>
+       <Checkbox 
+        value={checkBoxLeitura}
+        onValueChange={setcheckBoxLeitura}
+       />
+       <TouchableOpacity style={styles.buttonProseguir} onPress={startDayService}>
+        <Text style={styles.textoButtonProseguir}>Proseguir</Text>
+       </TouchableOpacity>
     </View>
   )
 }
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
     backgroundColor: '#4889BF',
     alignItems: 'center',
+    flex: 1
+  },
+  containerSuperior: {
+    paddingTop: 25,
+    paddingBottom: 5,
+    backgroundColor: '#fff',
+    width: '100%',
+    alignItems: 'center',
     justifyContent: 'center',
-  },
-  containerCheckListItens:{
     height: 'auto',
-    width: 350,
-    margin: 20,
-    borderRadius: 5,
-    alignItems: 'center',
-    justifyContent: 'center'
+    borderBottomLeftRadius: 30,
+    borderBottomRightRadius: 30,
   },
-  containerCheckList: {
-    height: 'auto',
-    width: 350,
-    margin: 5,
-    borderRadius: 5,
-    alignItems: 'center',
-    justifyContent: 'center'
-  },
-  textoContainer: {
-    fontSize: 20,
+  textoRelatorio:{
+    fontSize: 16,
     fontWeight: 'bold',
-    color: '#CEE0EF',
-    textAlign: 'center',
-    margin: 6
+    margin: 12
   },
-  continerCheckBoxRow: {
+  textoCheckListAnterior: {
+    fontSize: 16,
+    fontWeight: 'bold',
+    textAlign: 'center',
+    margin: 2
+  },
+  checkList: {
     flexDirection: 'row',
     alignItems: 'center',
     margin: 5
   },
   textoCheckBox: {
-    fontSize: 16,
-    color: '#FFF',
-    fontWeight: 'bold',
     marginLeft: 10,
-    textTransform: 'uppercase'
+    fontSize: 18,
+    color: '#CEE0EF'
   },
-  botao: {
-    alignItems: 'center',
-    justifyContent: 'center',
-    backgroundColor: '#3B76A7',
-    width: 120,
-    height: 40,
-    borderRadius: 5,
-    margin: 20
+  checkListContainer: {
+    marginTop: 25,
+    height: 200
   },
-  textoBotao: {
+  checkConfirm: {
     color: '#fff',
-    fontSize: 22
+    fontSize: 16,
+    fontWeight: 'bold',
+    margin: 5,
+    marginBottom: 20
   },
-  containerCheckBox: {
+  buttonProseguir: {
+    width: 120,
+    height: 35,
+    backgroundColor: '#3d916a',
     justifyContent: 'center',
     alignItems: 'center',
-    margin: 5
+    borderRadius: 5,
+    marginTop: 25
+  },
+  textoButtonProseguir: {
+    fontSize: 16,
+    color: '#fff'
   }
 });

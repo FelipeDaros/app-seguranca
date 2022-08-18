@@ -9,6 +9,7 @@ export default function RondaPonto({ navigation }){
   const [location, setLocation] = useState(null);
   const [errorMsg, setErrorMsg] = useState(null);
   const [textoSetor, setTextoSetor] = useState('');
+  const [empresa, setEmpresa] = useState('');
 
   function localizacao(){
     (async () => {

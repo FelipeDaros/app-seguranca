@@ -103,14 +103,18 @@ export default function HomeAuth({navigation}){
       style={styles.logoEskimo}
       />
       <Text style={styles.texto}>Vigia: {nome}</Text>
-      <Text style={styles.texto}>Situação: {status}</Text>
-      <TouchableOpacity style={styles.botao} onPress={rondaPonto}>
-        <Image
-          style={styles.icone}
-          source={salvarPontoIcone}
-        />
-        <Text style={styles.textoBotao}>Cadastrar um ponto</Text>
-      </TouchableOpacity>
+      <View style={styles.menuRow}>
+        <TouchableOpacity style={styles.botao} onPress={rondaPonto}>
+          <Image
+            style={styles.icone}
+            source={salvarPontoIcone}
+          />
+          <Text style={styles.textoBotao}>Cadastrar um ponto</Text>
+        </TouchableOpacity>
+        <TouchableOpacity onPress={rondaListaPonto}>
+          <Text>Lista Ronda</Text>
+        </TouchableOpacity>
+      </View>
       <View style={styles.menuRow}>
         <TouchableOpacity style={styles.botao} onPress={Ocorrencia}>
         <Image

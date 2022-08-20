@@ -17,10 +17,11 @@ export default function Login({ navigation }){
           password
         }
       ).then(async (r) => {
-        const {id, name, jwtToken} = r.data;
+        const {id, name, jwtToken, company} = r.data;
         await AsyncStorage.setItem("token", jwtToken);
         await AsyncStorage.setItem("id", id);
         await AsyncStorage.setItem("name", name);
+        await AsyncStorage.setItem("company", String(company.id))
         if(jwtToken){
           await navigation.navigate("CheckList");
         }

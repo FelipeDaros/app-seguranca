@@ -16,8 +16,6 @@ export default function Login({ navigation }) {
   const [itens, setItens] = useState([]);
   const crudService = new CrudService();
 
-  var t = [dados];
-
   useEffect(() => {
     searchLatestCheckList();
     itensAPI();
@@ -25,21 +23,24 @@ export default function Login({ navigation }) {
 
   async function searchLatestCheckList(){
     try {
-      const response = await crudService.findAll('/service-day/latest');
+      const response = await crudService.findAll('/service-day');
       setDados(response.data);
-
+      
     } catch (error) {
       console.log(error);
     }
   }
 
+  function listarItensAntigo(){
+    dados.map((e) => {
+      setItensAnterior(e.itens);
+    })
+  }
+
   const itensAPI = async() => {
     try {
-      const response = await crudService.findAll('service-day/itens');
+      const response = await crudService.findAll('post/itens');
       setItens(response.data);
-      t.map(e => {
-        setItensAnterior(e.itens);
-      })
     } catch (error) {
       
     }
@@ -53,7 +54,7 @@ export default function Login({ navigation }) {
           onPress: async () => {
             const id = await AsyncStorage.getItem("id");
             var nameItens = [];
-
+            console.log(e)
             checkIten.map(e => nameItens.push(e.name));
             await crudService.save("/service-day", {
               user_id: id,
@@ -63,7 +64,7 @@ export default function Login({ navigation }) {
               report_reading: checkBoxLeitura == true ? 1 : 0
             }).then(async (e) => {
               console.log(e.data)
-              await navigation.navigate("HomeAuth")
+              //await navigation.navigate("HomeAuth")
             }).catch(e => {
               console.log(e);
               return
@@ -139,7 +140,7 @@ export default function Login({ navigation }) {
           data={itensAnterior}
           renderItem={listarItensAnterior}
         />
-        <Button title="Atualizar" onPress={itensAPI}/>
+        <Button title="Atualizar" onPress={listarItensAntigo}/>
       </View>
        <View style={styles.checkListContainer}>
         <Text>CHECK LIST DOS EQUIPAMENTOS</Text>

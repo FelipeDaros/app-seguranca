@@ -14,6 +14,7 @@ export default function Login({ navigation }) {
   const [dados, setDados] = useState([]);
   const [itensAnterior, setItensAnterior] = useState([]);
   const [itens, setItens] = useState([]);
+  const [post, setPost] = useState('');
   const crudService = new CrudService();
 
   useEffect(() => {
@@ -25,16 +26,24 @@ export default function Login({ navigation }) {
     try {
       const response = await crudService.findAll('/service-day');
       setDados(response.data);
-      
     } catch (error) {
       console.log(error);
     }
   }
 
-  function listarItensAntigo(){
-    dados.map((e) => {
-      setItensAnterior(e.itens);
-    })
+  async function listarItensAntigo(){
+    try {
+      const r = await crudService.findAll('/service-day/latest');
+      const latest = [r.data];
+      latest.map((e) => {
+        setItensAnterior(e.itens);
+      })
+      dados.map((f) => {
+        console.log(f.post_id.id);
+      })
+    } catch (error) {
+      console.log(error.message)
+    }
   }
 
   const itensAPI = async() => {
@@ -54,12 +63,18 @@ export default function Login({ navigation }) {
           onPress: async () => {
             const id = await AsyncStorage.getItem("id");
             var nameItens = [];
-            console.log(e)
             checkIten.map(e => nameItens.push(e.name));
+            console.log({
+              user_id: id,
+              itens: nameItens,
+              post_id: post,
+              created_at: dayjs().format(),
+              report_reading: checkBoxLeitura == true ? 1 : 0
+            })
             await crudService.save("/service-day", {
               user_id: id,
               itens: nameItens,
-              post_id: "2850c05f-54ee-483c-959d-252cf2e51e40",
+              post_id: post,
               created_at: dayjs().format(),
               report_reading: checkBoxLeitura == true ? 1 : 0
             }).then(async (e) => {
@@ -84,7 +99,7 @@ export default function Login({ navigation }) {
       await crudService.save("/service-day", {
         user_id: id,
         itens: nameItens,
-        post_id: "2850c05f-54ee-483c-959d-252cf2e51e40",
+        post_id: post,
         created_at: dayjs().format(),
         report_reading: checkBoxLeitura == true ? 1 : 0
       }).then(async (e) => {

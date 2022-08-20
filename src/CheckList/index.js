@@ -14,6 +14,7 @@ export default function Login({ navigation }) {
   const [dados, setDados] = useState([]);
   const [itensAnterior, setItensAnterior] = useState([]);
   const [itens, setItens] = useState([]);
+  const [post, setPost] = useState('');
   const crudService = new CrudService();
 
   useEffect(() => {
@@ -35,6 +36,9 @@ export default function Login({ navigation }) {
     dados.map((e) => {
       setItensAnterior(e.itens);
     })
+    dados.map((f) => {
+      setPost(f.post_id.id);
+    })
   }
 
   const itensAPI = async() => {
@@ -54,17 +58,16 @@ export default function Login({ navigation }) {
           onPress: async () => {
             const id = await AsyncStorage.getItem("id");
             var nameItens = [];
-            console.log(e)
             checkIten.map(e => nameItens.push(e.name));
             await crudService.save("/service-day", {
               user_id: id,
               itens: nameItens,
-              post_id: "2850c05f-54ee-483c-959d-252cf2e51e40",
+              post_id: post,
               created_at: dayjs().format(),
               report_reading: checkBoxLeitura == true ? 1 : 0
             }).then(async (e) => {
               console.log(e.data)
-              //await navigation.navigate("HomeAuth")
+              await navigation.navigate("HomeAuth")
             }).catch(e => {
               console.log(e);
               return
@@ -84,7 +87,7 @@ export default function Login({ navigation }) {
       await crudService.save("/service-day", {
         user_id: id,
         itens: nameItens,
-        post_id: "2850c05f-54ee-483c-959d-252cf2e51e40",
+        post_id: post,
         created_at: dayjs().format(),
         report_reading: checkBoxLeitura == true ? 1 : 0
       }).then(async (e) => {
@@ -133,13 +136,13 @@ export default function Login({ navigation }) {
     <View style={styles.container}>
       <View style={styles.containerSuperior}>
         <Text style={styles.textoRelatorio}>INFORMAÇÕES DO RELATÓRIO ANTERIOR</Text>
-        <Text>{dados.created_at}</Text>
-        {dados.report_reading === 1 ? <Text>FOI CONFIRMADO A LEITURA DO RELATÓRIO</Text> : 
-        <Text>NÃO FOI CONFIRMADO A LEITURA DO RELATÓRIO</Text>}
         <FlatList
           data={itensAnterior}
           renderItem={listarItensAnterior}
         />
+        <Text>{dados.created_at}</Text>
+        {dados.report_reading === 1 ? <Text>FOI CONFIRMADO A LEITURA DO RELATÓRIO</Text> : 
+        <Text>NÃO FOI CONFIRMADO A LEITURA DO RELATÓRIO</Text>}
         <Button title="Atualizar" onPress={listarItensAntigo}/>
       </View>
        <View style={styles.checkListContainer}>

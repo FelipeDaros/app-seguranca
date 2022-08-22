@@ -26,20 +26,12 @@ export default function Login({ navigation }) {
     try {
       const response = await crudService.findAll('/service-day');
       setDados(response.data);
-      
     } catch (error) {
       console.log(error);
     }
   }
 
-  function listarItensAntigo(){
-    dados.map((e) => {
-      setItensAnterior(e.itens);
-    })
-    dados.map((f) => {
-      setPost(f.post_id.id);
-    })
-  }
+
 
   const itensAPI = async() => {
     try {
@@ -59,6 +51,13 @@ export default function Login({ navigation }) {
             const id = await AsyncStorage.getItem("id");
             var nameItens = [];
             checkIten.map(e => nameItens.push(e.name));
+            console.log({
+              user_id: id,
+              itens: nameItens,
+              post_id: post,
+              created_at: dayjs().format(),
+              report_reading: checkBoxLeitura == true ? 1 : 0
+            })
             await crudService.save("/service-day", {
               user_id: id,
               itens: nameItens,

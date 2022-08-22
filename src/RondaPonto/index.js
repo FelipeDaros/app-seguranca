@@ -2,6 +2,7 @@ import { Alert, StyleSheet, Text, TextInput, TouchableOpacity, View } from "reac
 import React, { useState, useEffect } from 'react';
 import * as Location from 'expo-location';
 import axios from 'axios';
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 
 export default function RondaPonto({ navigation }){
@@ -9,9 +10,8 @@ export default function RondaPonto({ navigation }){
   const [location, setLocation] = useState(null);
   const [errorMsg, setErrorMsg] = useState(null);
   const [textoSetor, setTextoSetor] = useState('');
-  const [empresa, setEmpresa] = useState('');
 
-  function localizacao(){
+  async function localizacao(){
     (async () => {
       let { status } = await Location.requestForegroundPermissionsAsync();
       if (status !== 'granted') {
@@ -21,14 +21,15 @@ export default function RondaPonto({ navigation }){
 
       let location = await Location.getCurrentPositionAsync({});
       setLocation(location);
-
+      const company = await AsyncStorage.getItem("company");
       const {coords} = location
       console.log(String(coords.longitude))
       await axios.post('https://backend-seguranca.herokuapp.com/api/service-point',
       {
       latitude: String(coords.latitude),
       longitude: String(coords.longitude),
-      locale: textoSetor.toUpperCase()
+      locale: textoSetor.toUpperCase(),
+      company_id: company
       }).then(r => {
         setLocation(null);
         setTextoSetor('');

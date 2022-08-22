@@ -31,6 +31,30 @@ export default function Login({ navigation }) {
     }
   }
 
+  async function listarItensAntigo(){
+    try {
+      const r = await crudService.findAll('/service-day/latest');
+      const latest = [r.data];
+      latest.map((e) => {
+        setItensAnterior(e.itens);
+      })
+      dados.map((f) => {
+        console.log(f.post_id.id);
+      })
+    } catch (error) {
+      console.log(error.message)
+    }
+  }
+
+  function listarItensAntigo(){
+    dados.map((e) => {
+      setItensAnterior(e.itens);
+    })
+    dados.map((f) => {
+      setPost(f.post_id.id);
+    })
+  }
+
 
 
   const itensAPI = async() => {
@@ -54,14 +78,14 @@ export default function Login({ navigation }) {
             console.log({
               user_id: id,
               itens: nameItens,
-              post_id: post,
+              post_id: "d6e00902-c222-4ae9-b17f-b83385127ec7",
               created_at: dayjs().format(),
               report_reading: checkBoxLeitura == true ? 1 : 0
             })
             await crudService.save("/service-day", {
               user_id: id,
               itens: nameItens,
-              post_id: post,
+              post_id: "d6e00902-c222-4ae9-b17f-b83385127ec7",
               created_at: dayjs().format(),
               report_reading: checkBoxLeitura == true ? 1 : 0
             }).then(async (e) => {

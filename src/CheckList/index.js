@@ -31,20 +31,7 @@ export default function Login({ navigation }) {
     }
   }
 
-  async function listarItensAntigo(){
-    try {
-      const r = await crudService.findAll('/service-day/latest');
-      const latest = [r.data];
-      latest.map((e) => {
-        setItensAnterior(e.itens);
-      })
-      dados.map((f) => {
-        console.log(f.post_id.id);
-      })
-    } catch (error) {
-      console.log(error.message)
-    }
-  }
+
 
   const itensAPI = async() => {
     try {
@@ -79,7 +66,7 @@ export default function Login({ navigation }) {
               report_reading: checkBoxLeitura == true ? 1 : 0
             }).then(async (e) => {
               console.log(e.data)
-              //await navigation.navigate("HomeAuth")
+              await navigation.navigate("HomeAuth")
             }).catch(e => {
               console.log(e);
               return
@@ -148,13 +135,13 @@ export default function Login({ navigation }) {
     <View style={styles.container}>
       <View style={styles.containerSuperior}>
         <Text style={styles.textoRelatorio}>INFORMAÇÕES DO RELATÓRIO ANTERIOR</Text>
-        <Text>{dados.created_at}</Text>
-        {dados.report_reading === 1 ? <Text>FOI CONFIRMADO A LEITURA DO RELATÓRIO</Text> : 
-        <Text>NÃO FOI CONFIRMADO A LEITURA DO RELATÓRIO</Text>}
         <FlatList
           data={itensAnterior}
           renderItem={listarItensAnterior}
         />
+        <Text>{dados.created_at}</Text>
+        {dados.report_reading === 1 ? <Text>FOI CONFIRMADO A LEITURA DO RELATÓRIO</Text> : 
+        <Text>NÃO FOI CONFIRMADO A LEITURA DO RELATÓRIO</Text>}
         <Button title="Atualizar" onPress={listarItensAntigo}/>
       </View>
        <View style={styles.checkListContainer}>

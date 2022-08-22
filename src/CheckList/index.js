@@ -38,24 +38,10 @@ export default function Login({ navigation }) {
       latest.map((e) => {
         setItensAnterior(e.itens);
       })
-      dados.map((f) => {
-        console.log(f.post_id.id);
-      })
     } catch (error) {
       console.log(error.message)
     }
   }
-
-  function listarItensAntigo(){
-    dados.map((e) => {
-      setItensAnterior(e.itens);
-    })
-    dados.map((f) => {
-      setPost(f.post_id.id);
-    })
-  }
-
-
 
   const itensAPI = async() => {
     try {
@@ -73,23 +59,16 @@ export default function Login({ navigation }) {
           text: 'Aceitar',
           onPress: async () => {
             const id = await AsyncStorage.getItem("id");
+            const post = await AsyncStorage.getItem("post")
             var nameItens = [];
             checkIten.map(e => nameItens.push(e.name));
-            console.log({
-              user_id: id,
-              itens: nameItens,
-              post_id: "d6e00902-c222-4ae9-b17f-b83385127ec7",
-              created_at: dayjs().format(),
-              report_reading: checkBoxLeitura == true ? 1 : 0
-            })
             await crudService.save("/service-day", {
               user_id: id,
               itens: nameItens,
-              post_id: "d6e00902-c222-4ae9-b17f-b83385127ec7",
+              post_id: post,
               created_at: dayjs().format(),
               report_reading: checkBoxLeitura == true ? 1 : 0
             }).then(async (e) => {
-              console.log(e.data)
               await navigation.navigate("HomeAuth")
             }).catch(e => {
               console.log(e);
@@ -105,6 +84,7 @@ export default function Login({ navigation }) {
     }
     if(checkBoxLeitura == true){
       const id = await AsyncStorage.getItem("id");
+      const post = await AsyncStorage.getItem("post")
       var nameItens = [];
       checkIten.map(e => nameItens.push(e.name));
       await crudService.save("/service-day", {
@@ -114,7 +94,6 @@ export default function Login({ navigation }) {
         created_at: dayjs().format(),
         report_reading: checkBoxLeitura == true ? 1 : 0
       }).then(async (e) => {
-        console.log(e.data)
         await navigation.navigate("HomeAuth")
       }).catch(e => {
         console.log(e);

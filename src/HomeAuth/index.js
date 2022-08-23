@@ -1,4 +1,4 @@
-import { Text, View, StyleSheet, ScrollView, TouchableOpacity, Vibration, Alert, Image } from "react-native";
+import { Text, View, StyleSheet, ScrollView, TouchableOpacity, Vibration, Alert, Image, TextInput } from "react-native";
 import React, {useState, useEffect} from "react";
 import * as Location from 'expo-location';
 import AsyncStorage from "@react-native-async-storage/async-storage";
@@ -21,7 +21,8 @@ export default function HomeAuth({navigation}){
   const [status, setStatus] = useState('');
   const [nome, setNome] = useState('');
   const ONE_SECOND_IN_MS = 500;
-  
+  const [alert, setAlert] = useState(0);
+
   async function mandarLocalizacao(){
     
     let { status } = await Location.requestForegroundPermissionsAsync();
@@ -96,6 +97,15 @@ export default function HomeAuth({navigation}){
     navigation.navigate('RondaListaPonto');
   }
 
+  function alertF(){
+    //alert == 0 ? setAlert(1) : setAlert(alert + 1);
+    if(alert == 0 && alert < 15){
+      setAlert(1);
+    }else if(alert < 15){
+      setAlert(alert + 1);
+    }
+  }
+
   return(
     <View style={styles.container}>
       <Image 
@@ -132,12 +142,13 @@ export default function HomeAuth({navigation}){
         </TouchableOpacity>
       </View>
       <View style={styles.menuRow}>
-        <TouchableOpacity style={styles.botao}>
+        <TouchableOpacity style={styles.botao} onPress={alertF}>
           <Image
             style={styles.icone}
             source={alertaVigiaIcone}
           />
           <Text style={styles.textoBotao}>Alerta Vigia</Text>
+          <Text>{alert+'/'+15}</Text>
         </TouchableOpacity>
         <TouchableOpacity style={styles.botao} onPress={ativarPanico}>
         <Image
@@ -193,8 +204,8 @@ const styles = StyleSheet.create({
     color: '#fff'
   },
   icone: {
-    height: 70, 
-    width: 70
+    height: 60, 
+    width: 60
   },
   botaoRondaAtivo:{
     height: 100,

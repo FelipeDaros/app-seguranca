@@ -18,10 +18,16 @@ export default function HomeAuth({navigation}){
   const [location, setLocation] = useState(null);
   const [errorMsg, setErrorMsg] = useState(null);
   const crudService = new CrudService();
-  const [status, setStatus] = useState('');
   const [nome, setNome] = useState('');
   const ONE_SECOND_IN_MS = 500;
   const [alert, setAlert] = useState(0);
+  const [proximoAlerta, setProximoAlerta] = useState('');
+  const [ultimoAlerta, setUltimoAlerta] = useState('');
+  
+  function addMinutes(date){
+    var date = dayjs(date).add(30, 'seconds').format();
+    return date;
+  }
 
   async function mandarLocalizacao(){
     
@@ -97,12 +103,19 @@ export default function HomeAuth({navigation}){
     navigation.navigate('RondaListaPonto');
   }
 
-  function alertF(){
-    //alert == 0 ? setAlert(1) : setAlert(alert + 1);
-    if(alert == 0 && alert < 15){
-      setAlert(1);
-    }else if(alert < 15){
+  async function alertF(){
+    var startDate = await AsyncStorage.getItem("startDate");
+    if(alert == 0){
       setAlert(alert + 1);
+      setProximoAlerta(addMinutes(startDate));
+      setUltimoAlerta(dayjs().format())
+    }else if(alert >= 1 && dayjs().format() >= proximoAlerta){
+      setAlert(alert+1);
+      setProximoAlerta(addMinutes(ultimoAlerta));
+      setUltimoAlerta(dayjs().format());
+      if(dayjs().format() >= dayjs(ultimoAlerta).add(30, 'seconds')){
+        console.log('ATRASADO');
+      }
     }
   }
 
@@ -148,7 +161,9 @@ export default function HomeAuth({navigation}){
             source={alertaVigiaIcone}
           />
           <Text style={styles.textoBotao}>Alerta Vigia</Text>
-          <Text>{alert+'/'+15}</Text>
+          <Text>{alert+'/'+24}</Text>
+          <Text>Próximo Alerta</Text>
+          <Text style={{fontSize: 10}}>{proximoAlerta}</Text>
         </TouchableOpacity>
         <TouchableOpacity style={styles.botao} onPress={ativarPanico}>
         <Image

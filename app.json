@@ -24,7 +24,11 @@
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#FFFFFF"
-      }
+      },
+      "permissions": [
+        "android.permission.RECORD_AUDIO"
+      ],
+      "package": "com.felipedaros.appseguranca"
     },
     "web": {
       "favicon": "./assets/favicon.png"
@@ -36,6 +40,11 @@
           "photosPermission": "The app accesses your photos to let you share them with your friends."
         }
       ]
-    ]
+    ],
+    "extra": {
+      "eas": {
+        "projectId": "fc6c0c64-6f2c-4530-8b2f-e6b849e2a71b"
+      }
+    }
   }
 }

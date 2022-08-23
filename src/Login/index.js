@@ -3,6 +3,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import React, {useState} from "react";
 import CrudService from "../services/crudService";
 import eskimoIcone from '../../assets/logo.png'
+import dayjs from "dayjs";
 
 
 export default function Login({ navigation }){
@@ -23,7 +24,9 @@ export default function Login({ navigation }){
         await AsyncStorage.setItem("name", name);
         await AsyncStorage.setItem("company", String(company.id))
         await AsyncStorage.setItem("post", post.id);
+        var starDate = dayjs().format();
         if(jwtToken){
+          await AsyncStorage.setItem("startDate", starDate);
           await navigation.navigate("CheckList");
         }
       }).catch(async (e) => {

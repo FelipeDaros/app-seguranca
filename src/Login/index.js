@@ -23,7 +23,7 @@ export default function Login({ navigation }){
         await AsyncStorage.setItem("id", id);
         await AsyncStorage.setItem("name", name);
         await AsyncStorage.setItem("company", String(company.id))
-        await AsyncStorage.setItem("post", post.id);
+        //await AsyncStorage.setItem("post", post.id);
         var starDate = dayjs().format();
         if(jwtToken){
           await AsyncStorage.setItem("startDate", starDate);

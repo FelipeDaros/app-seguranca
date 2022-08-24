@@ -106,16 +106,15 @@ export default function HomeAuth({navigation}){
   async function alertF(){
     var startDate = await AsyncStorage.getItem("startDate");
     if(alert == 0){
-      setAlert(alert + 1);
+      setAlert(1);
       setProximoAlerta(addMinutes(startDate));
       setUltimoAlerta(dayjs().format())
-    }else if(alert >= 1 && dayjs().format() >= proximoAlerta){
+    }
+
+    if(alert >= 1 && dayjs().format() > proximoAlerta){
       setAlert(alert+1);
       setProximoAlerta(addMinutes(ultimoAlerta));
       setUltimoAlerta(dayjs().format());
-      if(dayjs().format() >= dayjs(ultimoAlerta).add(30, 'seconds')){
-        console.log('ATRASADO');
-      }
     }
   }
 
@@ -155,7 +154,7 @@ export default function HomeAuth({navigation}){
         </TouchableOpacity>
       </View>
       <View style={styles.menuRow}>
-        <TouchableOpacity style={styles.botao} onPress={alertF}>
+        <TouchableOpacity style={styles.botao} onLongPress={alertF}>
           <Image
             style={styles.icone}
             source={alertaVigiaIcone}
@@ -163,7 +162,7 @@ export default function HomeAuth({navigation}){
           <Text style={styles.textoBotao}>Alerta Vigia</Text>
           <Text>{alert+'/'+24}</Text>
           <Text>Próximo Alerta</Text>
-          <Text style={{fontSize: 10}}>{proximoAlerta}</Text>
+          <Text style={{fontSize: 10, color: '#fff'}}>{proximoAlerta}</Text>
         </TouchableOpacity>
         <TouchableOpacity style={styles.botao} onPress={ativarPanico}>
         <Image

@@ -9,41 +9,29 @@ import IconeOn from '../../assets/icons8-on-47.png';
 
 export default function RondaListaPonto() {
   const [data, setData] = useState('');
-  const [dados, setDados] = useState([]);
-  const t = [data];
-   
+  const crudService = new CrudService();
   useEffect(() => {
     roundsUser();
   },[]);
 
   const roundsUser = async() => {
-    const crudService = new CrudService
     const id = await AsyncStorage.getItem("id");
-
-    await crudService.findAllRoundUser('/round', {
-      user_id: id
-    }).then((d) => {
-      setData(d.data);
-      //console.log(d.data)
-    }).catch(e => {
-      console.log(e);
-    });
-    t.map((e) => {
-      Object.values(e).forEach(item =>{
-        setDados(item);
-    });
-    })};
-
-
+    const company_id = await AsyncStorage.getItem("company")
+    try {
+      const respose = await crudService.findAll(`/service-point/company/${company_id}`);
+      setData(respose.data);
+    } catch (error) {
+      console.log(error.response.data);
+    }
+  }
 
   const renderItem = ({ item }) => (
     <TouchableOpacity style={styles.card}>
       <View style={styles.viewCard}>
         <View>
-          <Text style={styles.itemTexto}>Local: {item.point_id.locale}</Text>
-          <Text style={styles.itemTexto}>Responsável: {item.user_id.name}</Text>
+          <Text style={styles.itemTexto}>Local: {item.locale}</Text>
         </View>
-        {item.stats == true ? 
+        {item.stats == "A" ? 
         <Image 
         source={IconeOff}
         style={styles.iconeStats}
@@ -60,25 +48,13 @@ export default function RondaListaPonto() {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.textoTitulo}>LUGARES DA SUA RONDA</Text>
-      {dados <= (dados.length == 0) 
-      ? <TouchableOpacity onPress={roundsUser} style={styles.botaoAtualizar}>
-          <Text style={styles.textoAtualizar}>Atualizar</Text>
-          <Image
-            source={iconeRefresh}
-            style={styles.icone}
-          />
-        </TouchableOpacity>
-      : <View style={styles.viewFlatList}>
+      <Text style={styles.textoTitulo}>Lista os pontos para efetuar as rotas</Text>
         <FlatList 
           data={data}
           renderItem={renderItem}
           keyExtractor={item => item.id}
           style={{height: 250}}
-          />
-        </View>
-      }
-      
+        />
     </View>
   )
 }
@@ -95,7 +71,8 @@ const styles = StyleSheet.create({
     fontSize: 20, 
     color: '#CEE0EF', 
     fontWeight: 'bold', 
-    margin: 25
+    margin: 30,
+    marginTop: 60
   },
   viewFlatList: {
     height: 400
@@ -103,7 +80,7 @@ const styles = StyleSheet.create({
   card:{
     backgroundColor: 'rgba(255, 255, 255, 0.2)',
     width: 300,
-    height: 100,
+    height: 80,
     borderRadius: 5,
     justifyContent: 'center',
     alignItems: 'center',

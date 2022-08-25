@@ -27,7 +27,7 @@ export default function Login({ navigation }) {
       const response = await crudService.findAll('/service-day');
       setDados(response.data);
     } catch (error) {
-      console.log(error);
+      console.log(error.response.data);
     }
   }
 
@@ -39,7 +39,7 @@ export default function Login({ navigation }) {
         setItensAnterior(e.itens);
       })
     } catch (error) {
-      console.log(error.message)
+      console.log(error.response.data);
     }
   }
 
@@ -48,7 +48,7 @@ export default function Login({ navigation }) {
       const response = await crudService.findAll('post/itens');
       setItens(response.data);
     } catch (error) {
-      
+      console.log(error.response.data);
     }
   }
 
@@ -62,6 +62,13 @@ export default function Login({ navigation }) {
             const post = await AsyncStorage.getItem("post")
             var nameItens = [];
             checkIten.map(e => nameItens.push(e.name));
+            console.log({
+              user_id: id,
+              itens: nameItens,
+              post_id: post,
+              created_at: dayjs().format(),
+              report_reading: checkBoxLeitura == true ? 1 : 0
+            })
             await crudService.save("/service-day", {
               user_id: id,
               itens: nameItens,
@@ -71,7 +78,7 @@ export default function Login({ navigation }) {
             }).then(async (e) => {
               await navigation.navigate("HomeAuth")
             }).catch(e => {
-              console.log(e);
+              console.log(e.response.data);
               return
             })
           }
@@ -96,7 +103,7 @@ export default function Login({ navigation }) {
       }).then(async (e) => {
         await navigation.navigate("HomeAuth")
       }).catch(e => {
-        console.log(e);
+        console.log(e.response.data);
         return
       })
       await navigation.navigate("HomeAuth")

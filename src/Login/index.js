@@ -23,13 +23,14 @@ export default function Login({ navigation }){
         await AsyncStorage.setItem("id", id);
         await AsyncStorage.setItem("name", name);
         await AsyncStorage.setItem("company", String(company.id))
-        //await AsyncStorage.setItem("post", post.id);
+        post === '' ? '' : await AsyncStorage.setItem("post", post.id);
         var starDate = dayjs().format();
         if(jwtToken){
           await AsyncStorage.setItem("startDate", starDate);
           await navigation.navigate("CheckList");
         }
       }).catch(async (e) => {
+        console.log(e.response.data)
         await navigation.navigate("Login");
         Alert.alert(`Usuário ${email}`, 'Email ou senha incorretas');
       })

@@ -62,13 +62,6 @@ export default function Login({ navigation }) {
             const post = await AsyncStorage.getItem("post")
             var nameItens = [];
             checkIten.map(e => nameItens.push(e.name));
-            console.log({
-              user_id: id,
-              itens: nameItens,
-              post_id: post,
-              created_at: dayjs().format(),
-              report_reading: checkBoxLeitura == true ? 1 : 0
-            })
             await crudService.save("/service-day", {
               user_id: id,
               itens: nameItens,

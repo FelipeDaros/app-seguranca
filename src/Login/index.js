@@ -30,7 +30,6 @@ export default function Login({ navigation }){
           await navigation.navigate("CheckList");
         }
       }).catch(async (e) => {
-        console.log(e.response.data)
         await navigation.navigate("Login");
         Alert.alert(`Usuário ${email}`, 'Email ou senha incorretas');
       })

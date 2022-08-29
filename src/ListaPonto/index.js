@@ -9,7 +9,7 @@ import { BarCodeScanner } from 'expo-barcode-scanner';
 
 
 
-export default function RondaListaPonto() {
+export default function RondaListaPonto({navigation}) {
   const [data, setData] = useState('');
 
   const crudService = new CrudService();
@@ -28,8 +28,13 @@ export default function RondaListaPonto() {
     }
   }
 
+  async function Ponto(id){
+
+    await navigation.navigate("PontoSelecionado", {id});
+  }
+
   const renderItem = ({ item }) => (
-    <TouchableOpacity style={styles.card}>
+    <View style={styles.card}>
       <View style={styles.viewCard}>
         <View>
           <Text style={styles.itemTexto}>Local: {item.locale}</Text>
@@ -45,8 +50,13 @@ export default function RondaListaPonto() {
           style={styles.iconeStats}
         />
         }
+        <TouchableOpacity style={styles.buttonValidar} onLongPress={async () => {
+          Ponto(item.id)
+        }} key={item.id}>
+          <Text style={styles.itemTexto}>Validar</Text>
+        </TouchableOpacity>
       </View>
-    </TouchableOpacity>
+    </View>
   );
 
   return (
@@ -91,7 +101,7 @@ const styles = StyleSheet.create({
   },
   viewCard: {
     flexDirection: 'row', 
-    alignItems: 'center'
+    alignItems: 'center',
   },
   itemTexto: {
     margin: 5,
@@ -120,5 +130,14 @@ const styles = StyleSheet.create({
     width: 35,
     height: 35,
     margin: 5
+  },
+  buttonValidar: {
+    width: 60,
+    height: 40,
+    backgroundColor: 'green',
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderRadius: 5,
+    marginLeft: 10
   }
 });

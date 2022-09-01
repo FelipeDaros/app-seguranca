@@ -10,12 +10,24 @@ import * as Location from 'expo-location';
 export default function PontoSelecionado(props){
   const crudService = new CrudService();
   const [data, setData] = useState('');
+  const [errorMsg, setErrorMsg] = useState(null);
   const [location, setLocation] = useState(null);
   const [hasPermission, setHasPermission] = useState(null);
   const [scanned, setScanned] = useState(false);
 
   useEffect(() => {
     listarPontoSelecionado();
+
+    (async () => {
+      let { status } = await Location.requestForegroundPermissionsAsync();
+      if (status !== 'granted') {
+        setErrorMsg('Permission to access location was denied');
+        return;
+      }
+
+      let location = await Location.getCurrentPositionAsync({});
+      setLocation(location);
+    });
 
     const getBarCodeScannerPermissions = async () => {
       const { status } = await BarCodeScanner.requestPermissionsAsync();
@@ -25,6 +37,7 @@ export default function PontoSelecionado(props){
     getBarCodeScannerPermissions();
   }, [])
 
+  
   
 
   async function listarPontoSelecionado(){
@@ -42,14 +55,6 @@ export default function PontoSelecionado(props){
     setLocation(location);
     const {coords} = location
     setScanned(true);
-    console.log({
-      user_id: id,
-      point_id: props.route.params.id,
-      locale: data,
-      data: dayjs().format(),
-      latitude: Number(coords.latitude),
-      longitude: Number(coords.longitude)
-    })
     try {
       await crudService.save('/round', {
         user_id: id,
@@ -60,7 +65,7 @@ export default function PontoSelecionado(props){
         longitude: Number(coords.longitude)
       })
     } catch (error) {
-      
+      console.log(error.response.data);
     }
   };
 

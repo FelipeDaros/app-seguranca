@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { StyleSheet, Text, View, Button } from "react-native";
+import { StyleSheet, Text, View, Button, Alert } from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import CrudService from "../services/crudService";
 import { BarCodeScanner } from 'expo-barcode-scanner';
@@ -12,29 +12,27 @@ export default function PontoSelecionado(props){
   const [data, setData] = useState('');
   const [errorMsg, setErrorMsg] = useState(null);
   const [location, setLocation] = useState(null);
-  const [hasPermission, setHasPermission] = useState(null);
+  const [hasPermissionBarCode, setHasPermissionBarCode] = useState(null);
   const [scanned, setScanned] = useState(false);
 
   useEffect(() => {
     listarPontoSelecionado();
 
-    (async () => {
+    const getLocationPermissions = async () => {
       let { status } = await Location.requestForegroundPermissionsAsync();
       if (status !== 'granted') {
-        setErrorMsg('Permission to access location was denied');
+        setErrorMsg('Não foi autorizado o acesso a locailização');
         return;
       }
-
-      let location = await Location.getCurrentPositionAsync({});
-      setLocation(location);
-    });
+    }
 
     const getBarCodeScannerPermissions = async () => {
       const { status } = await BarCodeScanner.requestPermissionsAsync();
-      setHasPermission(status === 'granted');
+      setHasPermissionBarCode(status === 'granted');
     };
 
     getBarCodeScannerPermissions();
+    getLocationPermissions();
   }, [])
 
   
@@ -47,6 +45,13 @@ export default function PontoSelecionado(props){
     } catch (error) {
       console.log(error.respose)
     }
+  }
+
+  if (hasPermissionBarCode === null) {
+    return <Text style={{flex: 1, alignItems: 'center', justifyContent: 'center'}}>Requesting for camera permission</Text>;
+  }
+  if (hasPermissionBarCode === false) {
+    return Alert.alert('Você não deu permisão para acessar a câmera');
   }
 
   const handleBarCodeScanned = async ({ type, data }) => {
@@ -65,6 +70,7 @@ export default function PontoSelecionado(props){
         longitude: Number(coords.longitude)
       })
     } catch (error) {
+      Alert.alert('Você não está próximo ao ponto selecionado!');
       console.log(error.response.data);
     }
   };
@@ -73,6 +79,8 @@ export default function PontoSelecionado(props){
     <View style={styles.container}>
       <BarCodeScanner
         onBarCodeScanned={scanned ? undefined : handleBarCodeScanned}
+        barCodeTypes={[BarCodeScanner.Constants.BarCodeType.qr]}
+        type={BarCodeScanner.Constants.Type.back}
         style={StyleSheet.absoluteFillObject}
       />
       {scanned && <Button title={'Tap to Scan Again'} onPress={() => setScanned(false)} />}

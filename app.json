@@ -26,7 +26,10 @@
         "backgroundColor": "#FFFFFF"
       },
       "permissions": [
-        "android.permission.RECORD_AUDIO"
+        "android.permission.RECORD_AUDIO",
+        "android.permission.ACCESS_BACKGROUND_LOCATION",
+        "android.permission.VIBRATE",
+        "android.permission.CAMERA"
       ],
       "package": "com.felipedaros.appseguranca"
     },

@@ -1,15 +1,31 @@
 import { Text, View, StyleSheet, TextInput, TouchableOpacity, Alert, Image } from "react-native";
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import React, {useState} from "react";
+import React, {useState, useEffect} from "react";
 import CrudService from "../services/crudService";
 import eskimoIcone from '../../assets/logo.png'
 import dayjs from "dayjs";
+import * as Location from 'expo-location';
 
 
 export default function Login({ navigation }){
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const crudService = new CrudService();
+  const [location, setLocation] = useState(null);
+  const [errorMsg, setErrorMsg] = useState(null);
+
+  useEffect(() => {
+    (async () => {
+      let { status } = await Location.requestForegroundPermissionsAsync();
+      if (status !== 'granted') {
+        setErrorMsg('Permission to access location was denied');
+        return;
+      }
+
+      let location = await Location.getCurrentPositionAsync({});
+      setLocation(location);
+    })();
+  }, []);
 
   async function login(){
     const data = await crudService.save('/users/signin',

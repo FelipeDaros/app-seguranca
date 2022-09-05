@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { StyleSheet, Text, View, Button, Alert } from "react-native";
+import { StyleSheet, Text, View, Button, Alert, TouchableOpacity } from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import CrudService from "../services/crudService";
 import { BarCodeScanner } from 'expo-barcode-scanner';
@@ -14,6 +14,8 @@ export default function PontoSelecionado(props){
   const [location, setLocation] = useState(null);
   const [hasPermissionBarCode, setHasPermissionBarCode] = useState(null);
   const [scanned, setScanned] = useState(false);
+  const [isActive, setIsActive] = useState(false);
+  const [text, setText] = useState('');
 
   useEffect(() => {
     listarPontoSelecionado();
@@ -54,36 +56,55 @@ export default function PontoSelecionado(props){
     return Alert.alert('Você não deu permisão para acessar a câmera');
   }
 
-  const handleBarCodeScanned = async ({ type, data }) => {
+  async function enviarQRCODE(){
     let location = await Location.getCurrentPositionAsync({});
     const id = await AsyncStorage.getItem("id");
     setLocation(location);
     const {coords} = location
-    setScanned(true);
     try {
       await crudService.save('/round', {
         user_id: id,
         point_id: props.route.params.id,
-        locale: data,
+        locale: text,
         data: dayjs().format(),
         latitude: Number(coords.latitude),
         longitude: Number(coords.longitude)
       })
     } catch (error) {
-      Alert.alert('Você não está próximo ao ponto selecionado!');
       console.log(error.response.data);
     }
-  };
+  }
 
+  const handleBarCodeScanned = async ({ type, data }) => {
+    setText(data);
+    setScanned(true);
+    scanned == true ? setIsActive(false) : setIsActive(true);
+  };
+ 
   return(
     <View style={styles.container}>
-      <BarCodeScanner
-        onBarCodeScanned={scanned ? undefined : handleBarCodeScanned}
-        barCodeTypes={[BarCodeScanner.Constants.BarCodeType.qr]}
-        type={BarCodeScanner.Constants.Type.back}
-        style={StyleSheet.absoluteFillObject}
-      />
-      {scanned && <Button title={'Tap to Scan Again'} onPress={() => setScanned(false)} />}
+      {isActive && (
+        <BarCodeScanner
+          onBarCodeScanned={handleBarCodeScanned}
+          style={styles.QRCODE}
+          barCodeTypes={[BarCodeScanner.Constants.BarCodeType.qr]}
+          type={BarCodeScanner.Constants.Type.back}
+        />
+      )}
+      {isActive == true ? 
+        <TouchableOpacity onPress={() => setIsActive(false)} style={styles.button}>
+          <Text style={{color: '#fff'}}>Fechar</Text>
+        </TouchableOpacity> 
+        : 
+        <TouchableOpacity onPress={() => setIsActive(true)} style={styles.button}>
+          <Text style={{color: '#fff'}}>Scanner</Text>
+        </TouchableOpacity>
+        }
+        {text != '' || null || undefined ? <TouchableOpacity onPress={enviarQRCODE} style={styles.buttonSend}>
+            <Text style={{color: '#fff'}}>ENVIAR</Text>
+          </TouchableOpacity> : <></>
+          
+        }
     </View>
   )
 }
@@ -95,5 +116,27 @@ const styles = StyleSheet.create({
     backgroundColor: '#4889BF',
     justifyContent: 'center',
     alignItems: 'center'
+  },
+  QRCODE: {
+    height: 350,
+    width: 350
+  },
+  button: {
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: '#3B76A7',
+    height: 40,
+    width: 100,
+    borderRadius: 5,
+    margin: 10
+  },
+  buttonSend: {
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: '#24a31d',
+    height: 40,
+    width: 100,
+    borderRadius: 5,
+    margin: 10
   }
 });

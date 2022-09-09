@@ -3,28 +3,22 @@ import React, { useState, useEffect } from 'react';
 import * as Location from 'expo-location';
 import axios from 'axios';
 import AsyncStorage from "@react-native-async-storage/async-storage";
-
+import CrudService from '../services/crudService';
 
 export default function RondaPonto({ navigation }){
 
   const [location, setLocation] = useState(null);
   const [errorMsg, setErrorMsg] = useState(null);
   const [textoSetor, setTextoSetor] = useState('');
+  const crudService = new CrudService();
 
   async function localizacao(){
-    (async () => {
-      let { status } = await Location.requestForegroundPermissionsAsync();
-      if (status !== 'granted') {
-        setErrorMsg('Permission to access location was denied');
-        return;
-      }
-
-      let location = await Location.getCurrentPositionAsync({});
+    let location = await Location.getCurrentPositionAsync({});
       setLocation(location);
       const company = await AsyncStorage.getItem("company");
       const {coords} = location
       console.log(String(coords.longitude))
-      await axios.post('https://backend-seguranca.herokuapp.com/api/service-point',
+      await crudService.save('https://backend-seguranca.herokuapp.com/api/service-point',
       {
       latitude: String(coords.latitude),
       longitude: String(coords.longitude),
@@ -37,8 +31,8 @@ export default function RondaPonto({ navigation }){
       }).catch((err) => {
         console.log(err)
       })
-  })()
   }
+
   return(
     <View style={styles.container}>
       <Text style={styles.textoPonto}>Cadastro Ponto</Text>

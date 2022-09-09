@@ -30,12 +30,6 @@ export default function HomeAuth({navigation}){
   }
 
   async function mandarLocalizacao(){
-    
-    let { status } = await Location.requestForegroundPermissionsAsync();
-    if (status !== 'granted') {
-      setErrorMsg('Permission to access location was denied');
-      return;
-    }
 
     let location = await Location.getCurrentPositionAsync({});
     setLocation(location);
@@ -49,7 +43,6 @@ export default function HomeAuth({navigation}){
       date: dataAtual, 
       user_id
     }).then((r) => {
-      console.log(r.data)
       Alert.alert('Você mandou a sua localização', 'Localização Eviada!');
       Vibration.vibrate(1*ONE_SECOND_IN_MS);
     }).catch(e => {
@@ -133,8 +126,8 @@ export default function HomeAuth({navigation}){
           />
           <Text style={styles.textoBotao}>Cadastrar um ponto</Text>
         </TouchableOpacity>
-        <TouchableOpacity onPress={rondaListaPonto}>
-          <Text>Lista Ronda</Text>
+        <TouchableOpacity style={styles.botao} onPress={rondaListaPonto}>
+          <Text style={styles.textoBotao}>Lista Ronda</Text>
         </TouchableOpacity>
       </View>
       <View style={styles.menuRow}>
@@ -154,7 +147,7 @@ export default function HomeAuth({navigation}){
         </TouchableOpacity>
       </View>
       <View style={styles.menuRow}>
-        <TouchableOpacity style={styles.botao} onLongPress={alertF}>
+        <TouchableOpacity style={styles.botao} onPress={alertF}>
           <Image
             style={styles.icone}
             source={alertaVigiaIcone}

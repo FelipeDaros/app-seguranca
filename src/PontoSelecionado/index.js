@@ -69,6 +69,8 @@ export default function PontoSelecionado(props){
         data: dayjs().format(),
         latitude: Number(coords.latitude),
         longitude: Number(coords.longitude)
+      }).then(async () => {
+        await props.navigation.navigate('RondaListaPonto');
       })
     } catch (error) {
       console.log(error.response.data);

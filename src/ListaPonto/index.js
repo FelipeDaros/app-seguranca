@@ -50,7 +50,7 @@ export default function RondaListaPonto({navigation}) {
           style={styles.iconeStats}
         />
         }
-        <TouchableOpacity style={styles.buttonValidar} onLongPress={async () => {
+        <TouchableOpacity style={styles.buttonValidar} onPress={async () => {
           Ponto(item.id)
         }} key={item.id}>
           <Text style={styles.itemTexto}>Validar</Text>
@@ -67,6 +67,7 @@ export default function RondaListaPonto({navigation}) {
           renderItem={renderItem}
           keyExtractor={item => item.id}
           style={{height: 250}}
+          showsVerticalScrollIndicator={false}
         />
     </View>
   )

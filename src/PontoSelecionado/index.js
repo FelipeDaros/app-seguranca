@@ -4,6 +4,7 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import CrudService from "../services/crudService";
 import { BarCodeScanner } from 'expo-barcode-scanner';
 import dayjs from "dayjs";
+import utc from "dayjs/plugin/utc";
 import * as Location from 'expo-location';
 
 
@@ -61,19 +62,21 @@ export default function PontoSelecionado(props){
     const id = await AsyncStorage.getItem("id");
     setLocation(location);
     const {coords} = location
+    dayjs.extend(utc);
     try {
       await crudService.save('/round', {
         user_id: id,
         point_id: props.route.params.id,
         locale: text,
-        data: dayjs().format(),
+        data: dayjs().format('YYYY-MM-DD HH:mm:ss'),
         latitude: Number(coords.latitude),
         longitude: Number(coords.longitude)
       }).then(async () => {
         await props.navigation.navigate('RondaListaPonto');
       })
     } catch (error) {
-      console.log(error.response.data);
+      var err = error.response.data
+      Alert.alert('Ocorreu um erro!', `${err.error}`);
     }
   }
 

@@ -40,7 +40,7 @@ export default function Login({ navigation }){
         await AsyncStorage.setItem("name", name);
         await AsyncStorage.setItem("company", String(company.id))
         post == ('' || null || undefined) ? '' : await AsyncStorage.setItem("post", post.id);
-        var starDate = dayjs().format();
+        var starDate = dayjs().format('YYYY-MM-DD HH:mm:ss');
         if(jwtToken){
           await AsyncStorage.setItem("startDate", starDate);
           await navigation.navigate("CheckList");

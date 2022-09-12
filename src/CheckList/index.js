@@ -66,7 +66,7 @@ export default function Login({ navigation }) {
               user_id: id,
               itens: nameItens,
               post_id: post,
-              created_at: dayjs().format(),
+              created_at: dayjs().format('YYYY-MM-DD HH:mm:ss'),
               report_reading: checkBoxLeitura == true ? 1 : 0
             }).then(async (e) => {
               await navigation.navigate("HomeAuth")

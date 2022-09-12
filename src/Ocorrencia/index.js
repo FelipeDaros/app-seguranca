@@ -72,7 +72,7 @@ export default function Ocorrencia(){
       type: type,
       stats: 1,
       date_occurrence: selectedDate.replace('/', '-'),
-      current_time: dayjs().format(),
+      current_time: dayjs().format('YYYY-MM-DD HH:mm:ss'),
 	    photo: "SEM FOTO"
     }).then(() => {
       setPickedImagePath('');

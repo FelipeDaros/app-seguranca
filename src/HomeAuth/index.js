@@ -9,6 +9,7 @@ import registerPoint from '../../assets/registerPoint.png';
 import regiserOccurence from '../../assets/regiserOccurence.png';
 import panic from '../../assets/panic.png';
 import CrudService from "../services/crudService";
+import dayjs from "dayjs";
 
 export default function HomeAuth({navigation}){
   const ONE_SECOND_IN_MS = 500;
@@ -26,7 +27,7 @@ export default function HomeAuth({navigation}){
         Vibration.vibrate(1*ONE_SECOND_IN_MS);
       })
     } catch (error) {
-      
+      console.log(error)
     }
   }
 
@@ -43,9 +44,20 @@ export default function HomeAuth({navigation}){
   }
 
   async function sair(){
-    await AsyncStorage.multiRemove(["jwtToken", "id", "name"]).then(() => {
-      navigation.navigate("Login");
-    });
+    Alert.alert("SAIR", "Você deseja realmente sair ?",[
+      {
+        text: 'SIM',
+        onPress: async () => {
+          await AsyncStorage.multiRemove(["jwtToken", "id", "name"]).then(() => {
+            navigation.navigate("Login");
+          });
+        }
+      },
+      {
+        text: 'NÃO',
+          onPress: () => {return}
+      }
+    ])
   }
 
   return(
@@ -59,7 +71,7 @@ export default function HomeAuth({navigation}){
         <Image source={round} style={styles.imgCard}/>
           <Text style={styles.textTitleCard}>RONDA</Text>
         </TouchableOpacity>
-        <TouchableOpacity style={styles.card}>
+        <TouchableOpacity onPress={ativarPanico} style={styles.card}>
         <Image source={panic} style={styles.imgCard}/>
           <Text style={styles.textTitleCard}>BOTÃO PÂNICO</Text>
         </TouchableOpacity>
@@ -76,6 +88,9 @@ export default function HomeAuth({navigation}){
           <Text style={styles.textTitleCard}>CADASTRO PONTO</Text>
         </TouchableOpacity>
       </ScrollView>
+      <TouchableOpacity onPress={sair} style={styles.buttonExit}>
+          <Text style={styles.textExit}>SAIR</Text>
+        </TouchableOpacity>
     </View>
   )
 }
@@ -89,7 +104,7 @@ const styles = StyleSheet.create({
     alignItems: 'center'
   },
   card: {
-    height: 80,
+    height: 70,
     width: 300,
     backgroundColor: 'rgba(255, 255, 255, 0.08)',
     borderRadius: 5,
@@ -107,5 +122,17 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: '#fff',
     fontWeight: 'bold'
+  },
+  buttonExit:{
+    height: 25,
+    width: 100,
+    margin: 20,
+    backgroundColor: '#000',
+    justifyContent: 'center',
+    alignItems: 'center'
+  },
+  textExit: {
+    fontSize: 20,
+    color: '#fff'
   }
 });

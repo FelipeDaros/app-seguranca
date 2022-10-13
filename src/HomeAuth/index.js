@@ -60,6 +60,10 @@ export default function HomeAuth({navigation}){
     ])
   }
 
+  function alertTime(){
+    
+  }
+
   return(
     <View style={styles.container}>
       <ScrollView showsVerticalScrollIndicator={false} style={{marginTop: 50}}>

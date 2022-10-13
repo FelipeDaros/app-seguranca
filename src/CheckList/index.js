@@ -45,10 +45,11 @@ export default function Login({ navigation }) {
 
   const itensAPI = async() => {
     try {
-      const response = await crudService.findAll('post/itens');
+      const response = await crudService.findAllItensPost('post/itens');
       setItens(response.data);
     } catch (error) {
       console.log(error.response.data);
+      setItens(error.response.data);
     }
   }
 
@@ -106,14 +107,14 @@ export default function Login({ navigation }) {
   const listAllItens = ({item, index}) => (
     <View style={styles.checkList}>
       <Checkbox
-        value={checkIten.find(iten => iten.id === item.id ? true : false)}
-        key={item.id}
+        value={checkIten.find(iten => iten.itensId === item.itensId ? true : false)}
+        key={item.itensId}
         color={setCheckIten ? '#000' : '#CEE0EF'}
         onValueChange={() => {
           handleListTap(item)
         }}
       />
-      <Text style={styles.textoCheckBox}>{item.name}</Text>
+      <Text style={styles.textoCheckBox}>{item.itens}</Text>
     </View>
   )
 
@@ -149,7 +150,8 @@ export default function Login({ navigation }) {
       </View>
        <View style={styles.checkListContainer}>
         <Text>CHECK LIST DOS EQUIPAMENTOS</Text>
-          <FlatList 
+          
+        <FlatList 
             data={itens}
             renderItem={listAllItens}
           />
@@ -229,3 +231,8 @@ const styles = StyleSheet.create({
     color: '#fff'
   }
 });
+
+
+/*
+
+          */

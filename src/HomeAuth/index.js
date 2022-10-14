@@ -1,4 +1,4 @@
-import { Alert, Vibration, Text, View, StyleSheet, ScrollView, Image, TouchableOpacity } from "react-native";
+import { Alert, Vibration, Text, View, StyleSheet, ScrollView, Image, TouchableOpacity, FlatList } from "react-native";
 import React, {useState, useEffect} from "react";
 import * as Location from 'expo-location';
 import AsyncStorage from "@react-native-async-storage/async-storage";
@@ -14,9 +14,16 @@ import dayjs from "dayjs";
 export default function HomeAuth({navigation}){
   const ONE_SECOND_IN_MS = 500;
   const crudService = new CrudService();
+  const [alertText, setAlertText] = useState();
+
+  useEffect(() => {
+    alertTime();
+  }, [])
 
   async function ativarPanico(){
     const id = await AsyncStorage.getItem("id");
+    console.log(JSON.stringify(alertText))
+    
     try {
       crudService.save('/panic',{
         user_id: id,
@@ -60,15 +67,29 @@ export default function HomeAuth({navigation}){
     ])
   }
 
-  function alertTime(){
-    
+  async function alertTime(){
+    const id = await AsyncStorage.getItem("id");
+    try {
+      var c = await crudService.findOne('time-alert/', id);
+      setAlertText(c.data);
+    } catch (error) {
+      setAlertText(error.response.data);
+    }
+
   }
+
+  const listAlert = ({item}) => (
+    <View>
+      <Text style={styles.textoCheckListAnterior}>{item.latestAlert}</Text>
+    </View>
+  )
 
   return(
     <View style={styles.container}>
       <ScrollView showsVerticalScrollIndicator={false} style={{marginTop: 50}}>
-        <TouchableOpacity style={styles.card}>
+        <TouchableOpacity style={styles.card} >
           <Image source={alert} style={styles.imgCard}/>
+          {alertText == ''|| undefined || null ? <Text></Text> : <Text>{alertText}</Text>}
           <Text style={styles.textTitleCard}>ALERTA</Text>
         </TouchableOpacity>
         <TouchableOpacity onPress={rondaListaPonto} style={styles.card}>

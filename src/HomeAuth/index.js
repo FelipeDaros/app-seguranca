@@ -9,16 +9,17 @@ import registerPoint from '../../assets/registerPoint.png';
 import regiserOccurence from '../../assets/regiserOccurence.png';
 import panic from '../../assets/panic.png';
 import CrudService from "../services/crudService";
-import dayjs from "dayjs";
+import dayjs, { Dayjs } from "dayjs";
+import advancedFormat from 'dayjs/plugin/advancedFormat'
 
 export default function HomeAuth({navigation}){
   const ONE_SECOND_IN_MS = 500;
   const crudService = new CrudService();
-  const [alertText, setAlertText] = useState();
-
+  const [alertText, setAlertText] = useState([]);
+  const [dataAlert, setDataAlert] = useState();
   useEffect(() => {
     alertTime();
-  }, [])
+  }, []);
 
   async function ativarPanico(){
     const id = await AsyncStorage.getItem("id");
@@ -77,19 +78,54 @@ export default function HomeAuth({navigation}){
     }
 
   }
+  
 
   const listAlert = ({item}) => (
     <View>
-      <Text style={styles.textoCheckListAnterior}>{item.latestAlert}</Text>
+      <Text style={{fontSize: 9}}>Ultima:{item.latestAlert}</Text>
+      <Text style={{fontSize: 9}}>Proxíma:{item.latestAlert}</Text>
     </View>
   )
+
+  async function alertaVigia(){
+    const user_id = await AsyncStorage.getItem("id");
+    const company_id = await AsyncStorage.getItem("company");
+    const latestAlert = dayjs().format('YYYY-MM-DD HH:mm:ss');
+    alertText.map(e => {
+      setDataAlert(e.latestAlert);
+    })
+    
+    try {
+      await crudService.save('time-alert', {
+        user_id,
+        company_id,
+        latestAlert
+      }).then(() => {
+        setTimeout(() => {
+
+          var h = dayjs(dataAlert).get('hours');
+          var m = dayjs(dataAlert).get('minutes');
+          var s = dayjs(dataAlert).get('seconds');
+          console.log(h+3)
+          alertTime()
+        }, 2000)
+      })
+    } catch (error) {
+      console.log(error.response.data);
+    }
+
+
+  }
 
   return(
     <View style={styles.container}>
       <ScrollView showsVerticalScrollIndicator={false} style={{marginTop: 50}}>
-        <TouchableOpacity style={styles.card} >
+        <TouchableOpacity style={styles.card} onPress={alertaVigia}>
           <Image source={alert} style={styles.imgCard}/>
-          {alertText == ''|| undefined || null ? <Text></Text> : <Text>{alertText}</Text>}
+          <FlatList 
+            data={alertText}
+            renderItem={listAlert}
+          />
           <Text style={styles.textTitleCard}>ALERTA</Text>
         </TouchableOpacity>
         <TouchableOpacity onPress={rondaListaPonto} style={styles.card}>

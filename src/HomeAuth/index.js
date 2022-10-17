@@ -68,6 +68,12 @@ export default function HomeAuth({navigation}){
     ])
   }
 
+  setTimeout(() => {
+    alertText.map(e => {
+      setDataAlert(e.latestAlert);
+    })
+  }, 1000)
+
   async function alertTime(){
     const id = await AsyncStorage.getItem("id");
     try {
@@ -80,35 +86,34 @@ export default function HomeAuth({navigation}){
   }
   
 
-  const listAlert = ({item}) => (
-    <View>
-      <Text style={{fontSize: 9}}>Ultima:{item.latestAlert}</Text>
-      <Text style={{fontSize: 9}}>Proxíma:{item.latestAlert}</Text>
-    </View>
-  )
-
   async function alertaVigia(){
     const user_id = await AsyncStorage.getItem("id");
     const company_id = await AsyncStorage.getItem("company");
-    const latestAlert = dayjs().format('YYYY-MM-DD HH:mm:ss');
-    alertText.map(e => {
-      setDataAlert(e.latestAlert);
-    })
+    const horarioAtual = dayjs().format('YYYY-MM-DD HH:mm:ss');
+
+    var ultimaD = dayjs(dataAlert).get("day");
+    var ultimaH = dayjs(dataAlert).get("hour");
+    var ultimaM = dayjs(dataAlert).get("minute");
+    var horarioAtualD = dayjs(horarioAtual).get("day");
+    var horarioAtualH = dayjs(horarioAtual).get("hour");
+    var horarioAtualM = dayjs(horarioAtual).get("minute");
+    console.log("HORARIO ATUAL == ", horarioAtualM)
+    console.log("HORARIO ANTERIOR ",ultimaM)
+    if(ultimaM < horarioAtualM && ultimaH < horarioAtualH && ultimaD < horarioAtualD){
+      console.log("HORARIO ACIMA")
+    }else{
+      console.log("HORA CERTA");
+    }
     
     try {
       await crudService.save('time-alert', {
         user_id,
         company_id,
-        latestAlert
+        latestAlert: horarioAtual
       }).then(() => {
         setTimeout(() => {
-
-          var h = dayjs(dataAlert).get('hours');
-          var m = dayjs(dataAlert).get('minutes');
-          var s = dayjs(dataAlert).get('seconds');
-          console.log(h+3)
           alertTime()
-        }, 2000)
+        }, 1000)
       })
     } catch (error) {
       console.log(error.response.data);
@@ -122,10 +127,7 @@ export default function HomeAuth({navigation}){
       <ScrollView showsVerticalScrollIndicator={false} style={{marginTop: 50}}>
         <TouchableOpacity style={styles.card} onPress={alertaVigia}>
           <Image source={alert} style={styles.imgCard}/>
-          <FlatList 
-            data={alertText}
-            renderItem={listAlert}
-          />
+          <Text style={{fontSize: 9, color: '#fff'}}>{dataAlert}</Text>
           <Text style={styles.textTitleCard}>ALERTA</Text>
         </TouchableOpacity>
         <TouchableOpacity onPress={rondaListaPonto} style={styles.card}>
@@ -197,3 +199,34 @@ const styles = StyleSheet.create({
     color: '#fff'
   }
 });
+/*
+var ultimaDataH = dayjs(dataAlert).get("hour");
+    var ultimaDataM = dayjs(dataAlert).get("minute");
+    var proximoM = ultimaDataM + 2
+
+    if(proximoM + 1 <= dayjs().format('mm')){
+      Alert.alert("ALERTA ATRASADO", "Você passou do horário previsto para o alert!");
+    }
+    
+    if(proximoM >= dayjs().format('mm') && ultimaDataH+3 >= dayjs().format('HH')){
+      Alert.alert("Ponto Alerta", "Não está no horário ainda!");
+    }else{
+      setProximoAlert(ultimaDataM+1);
+      console.log("Está na hora!");
+      try {
+        await crudService.save('time-alert', {
+          user_id,
+          company_id,
+          latestAlert
+        }).then(() => {
+          setTimeout(() => {
+            alertTime()
+            alertText.map(e => {
+              setDataAlert(e.latestAlert);
+            })
+          }, 2000)
+        })
+      } catch (error) {
+        console.log(error.response.data);
+      }
+    }*/

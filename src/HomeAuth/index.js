@@ -10,7 +10,6 @@ import regiserOccurence from '../../assets/regiserOccurence.png';
 import panic from '../../assets/panic.png';
 import CrudService from "../services/crudService";
 import dayjs from "dayjs";
-import { Observable } from 'rxjs';
 
 
 export default function HomeAuth({navigation}){
@@ -18,19 +17,13 @@ export default function HomeAuth({navigation}){
   const crudService = new CrudService();
   const [alertText, setAlertText] = useState([]);
   const [dataAlert, setDataAlert] = useState();
-  const [chamaAlerta, setChamaAlerta] = useState();
-  const [horaAtual, setHoraAtual] = useState();
+
   useEffect(() => {
     alertTime();
-    if(chamaAlerta == horaAtual){
-      Alert.alert("Está na hora de ativar o alerta!");
-    }
   }, []);
 
   async function ativarPanico(){
     const id = await AsyncStorage.getItem("id");
-    console.log(JSON.stringify(alertText))
-    
     try {
       crudService.save('/panic',{
         user_id: id,
@@ -75,7 +68,6 @@ export default function HomeAuth({navigation}){
   }
 
   setTimeout(() => {
-    
     alertText.map(e => {
       setDataAlert(e.latestAlert);
     })
@@ -104,31 +96,26 @@ export default function HomeAuth({navigation}){
     var horarioAtualD = dayjs(horarioAtual).get("day");
     var horarioAtualH = dayjs(horarioAtual).get("hour");
     var horarioAtualM = dayjs(horarioAtual).get("minute");
-    console.log("HORARIO ANTERIOR ",ultimaM)
-    console.log("HORARIO ATUAL == ", horarioAtualM)
-    console.log("HORARIO MAXIMO == ", ultimaM + 4)
-    //&& ultimaH >= horarioAtualH && ultimaD >= horarioAtualD
-    setChamaAlerta(ultimaM);
-    setHoraAtual(horarioAtualM);
-    if(ultimaM <= horarioAtualM && ultimaM + 4 >= horarioAtualM){
-      console.log("Horario certo")
+
+    if(ultimaM +4 <= horarioAtualM){
+      try {
+        await crudService.save('time-alert', {
+          user_id,
+          company_id,
+          latestAlert: horarioAtual
+        }).then(() => {
+          setTimeout(() => {
+            alertTime()
+          }, 1000)
+        })
+      } catch (error) {
+        console.log(error.response.data);
+      }
     }else{
-      console.log("Passou ou antes");
+      Alert.alert("Alerta", "O horário está incorreto, não está na hora!");
     }
     
-    try {
-      await crudService.save('time-alert', {
-        user_id,
-        company_id,
-        latestAlert: horarioAtual
-      }).then(() => {
-        setTimeout(() => {
-          alertTime()
-        }, 1000)
-      })
-    } catch (error) {
-      console.log(error.response.data);
-    }
+    
 
 
   }

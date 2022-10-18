@@ -9,16 +9,22 @@ import registerPoint from '../../assets/registerPoint.png';
 import regiserOccurence from '../../assets/regiserOccurence.png';
 import panic from '../../assets/panic.png';
 import CrudService from "../services/crudService";
-import dayjs, { Dayjs } from "dayjs";
-import advancedFormat from 'dayjs/plugin/advancedFormat'
+import dayjs from "dayjs";
+import { Observable } from 'rxjs';
+
 
 export default function HomeAuth({navigation}){
   const ONE_SECOND_IN_MS = 500;
   const crudService = new CrudService();
   const [alertText, setAlertText] = useState([]);
   const [dataAlert, setDataAlert] = useState();
+  const [chamaAlerta, setChamaAlerta] = useState();
+  const [horaAtual, setHoraAtual] = useState();
   useEffect(() => {
     alertTime();
+    if(chamaAlerta == horaAtual){
+      Alert.alert("Está na hora de ativar o alerta!");
+    }
   }, []);
 
   async function ativarPanico(){
@@ -69,6 +75,7 @@ export default function HomeAuth({navigation}){
   }
 
   setTimeout(() => {
+    
     alertText.map(e => {
       setDataAlert(e.latestAlert);
     })
@@ -97,12 +104,16 @@ export default function HomeAuth({navigation}){
     var horarioAtualD = dayjs(horarioAtual).get("day");
     var horarioAtualH = dayjs(horarioAtual).get("hour");
     var horarioAtualM = dayjs(horarioAtual).get("minute");
-    console.log("HORARIO ATUAL == ", horarioAtualM)
     console.log("HORARIO ANTERIOR ",ultimaM)
-    if(ultimaM < horarioAtualM && ultimaH < horarioAtualH && ultimaD < horarioAtualD){
-      console.log("HORARIO ACIMA")
+    console.log("HORARIO ATUAL == ", horarioAtualM)
+    console.log("HORARIO MAXIMO == ", ultimaM + 4)
+    //&& ultimaH >= horarioAtualH && ultimaD >= horarioAtualD
+    setChamaAlerta(ultimaM);
+    setHoraAtual(horarioAtualM);
+    if(ultimaM <= horarioAtualM && ultimaM + 4 >= horarioAtualM){
+      console.log("Horario certo")
     }else{
-      console.log("HORA CERTA");
+      console.log("Passou ou antes");
     }
     
     try {

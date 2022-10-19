@@ -98,6 +98,7 @@ export default function HomeAuth({navigation}){
     var horarioAtualM = dayjs(horarioAtual).get("minute");
 
     if(ultimaM +4 <= horarioAtualM){
+      Alert.alert("Alerta", "Está na HORA!");
       try {
         await crudService.save('time-alert', {
           user_id,
@@ -111,6 +112,8 @@ export default function HomeAuth({navigation}){
       } catch (error) {
         console.log(error.response.data);
       }
+    }else if(horarioAtualM > ultimaM +4){
+      Alert.alert("Alerta", "Está Já passou da hora");
     }else{
       Alert.alert("Alerta", "O horário está incorreto, não está na hora!");
     }

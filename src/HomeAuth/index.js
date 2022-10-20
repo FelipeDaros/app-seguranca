@@ -83,6 +83,8 @@ export default function HomeAuth({navigation}){
     }
 
   }
+
+  
   
 
   async function alertaVigia(){
@@ -97,7 +99,7 @@ export default function HomeAuth({navigation}){
     var horarioAtualH = dayjs(horarioAtual).get("hour");
     var horarioAtualM = dayjs(horarioAtual).get("minute");
 
-    if(ultimaM +4 <= horarioAtualM){
+    if(ultimaM <= horarioAtualM && ultimaM +1 >= horarioAtualM){
       Alert.alert("Alerta", "Está na HORA!");
       try {
         await crudService.save('time-alert', {
@@ -112,10 +114,22 @@ export default function HomeAuth({navigation}){
       } catch (error) {
         console.log(error.response.data);
       }
-    }else if(horarioAtualM > ultimaM +4){
-      Alert.alert("Alerta", "Está Já passou da hora");
     }else{
-      Alert.alert("Alerta", "O horário está incorreto, não está na hora!");
+      console.log("Passou!")
+      Alert.alert("Alerta", "Está na HORA!");
+      try {
+        await crudService.save('time-alert', {
+          user_id,
+          company_id,
+          latestAlert: horarioAtual
+        }).then(() => {
+          setTimeout(() => {
+            alertTime()
+          }, 1000)
+        })
+      } catch (error) {
+        console.log(error.response.data);
+      }
     }
     
     

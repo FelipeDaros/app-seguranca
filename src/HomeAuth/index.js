@@ -17,7 +17,7 @@ export default function HomeAuth({navigation}){
   const crudService = new CrudService();
   const [alertText, setAlertText] = useState([]);
   const [dataAlert, setDataAlert] = useState();
-
+  const [proximoAlerta, setProximoAlerta] = useState();
   useEffect(() => {
     alertTime();
   }, []);
@@ -35,6 +35,7 @@ export default function HomeAuth({navigation}){
       })
     } catch (error) {
       console.log(error)
+      Alert.alert("Alerta", "Ocorreu um erro inesperado! Entre em contato com o T.I RAMAL 220");
     }
   }
 
@@ -81,11 +82,7 @@ export default function HomeAuth({navigation}){
     } catch (error) {
       setAlertText(error.response.data);
     }
-
   }
-
-  
-  
 
   async function alertaVigia(){
     const user_id = await AsyncStorage.getItem("id");
@@ -98,43 +95,50 @@ export default function HomeAuth({navigation}){
     var horarioAtualD = dayjs(horarioAtual).get("day");
     var horarioAtualH = dayjs(horarioAtual).get("hour");
     var horarioAtualM = dayjs(horarioAtual).get("minute");
-
-    if(ultimaM <= horarioAtualM && ultimaM +1 >= horarioAtualM){
-      Alert.alert("Alerta", "Está na HORA!");
+    console.log("----------------------------")
+    console.log("ULTIMO: ",ultimaM)
+    console.log("AGORA: ", horarioAtualM)
+    console.log("ATÉ: ", ultimaM+4)
+    if(ultimaM <= horarioAtualM && ultimaM + 3 >= horarioAtualM && ultimaH + 4 == horarioAtualH && ultimaD >= horarioAtualD){
+      setProximoAlerta(ultimaH+4);
       try {
         await crudService.save('time-alert', {
           user_id,
           company_id,
-          latestAlert: horarioAtual
+          latestAlert: horarioAtual,
+          late: 0
         }).then(() => {
+          Alert.alert("Alerta", "Está na HORA!");
           setTimeout(() => {
             alertTime()
           }, 1000)
         })
       } catch (error) {
+        Alert.alert("Alerta", "HORARIO C : Ocorreu um erro inesperado! Entre em contato com o T.I RAMAL 220");
+        console.log(error.response.data);
+      }
+    }else if(ultimaM + 4 <= horarioAtualM && ultimaH + 4 == horarioAtualH && ultimaD >= horarioAtualD){
+      setProximoAlerta(ultimaH+4);
+      try {
+        await crudService.save('time-alert', {
+          user_id,
+          company_id,
+          latestAlert: horarioAtual,
+          late: 1
+        }).then(() => {
+          Alert.alert("Alerta", "Seu alerta foi atrasado! Foi gerado um relatório");
+          setTimeout(() => {
+            alertTime()
+          }, 1000)
+        })
+      } catch (error) {
+        Alert.alert("Alerta", "HORARIO E :Ocorreu um erro inesperado! Entre em contato com o T.I RAMAL 220");
         console.log(error.response.data);
       }
     }else{
-      console.log("Passou!")
-      Alert.alert("Alerta", "Está na HORA!");
-      try {
-        await crudService.save('time-alert', {
-          user_id,
-          company_id,
-          latestAlert: horarioAtual
-        }).then(() => {
-          setTimeout(() => {
-            alertTime()
-          }, 1000)
-        })
-      } catch (error) {
-        console.log(error.response.data);
-      }
+      Alert.alert("ALERTA", "Não está na hora inda!");
     }
     
-    
-
-
   }
 
   return(
@@ -142,8 +146,11 @@ export default function HomeAuth({navigation}){
       <ScrollView showsVerticalScrollIndicator={false} style={{marginTop: 50}}>
         <TouchableOpacity style={styles.card} onPress={alertaVigia}>
           <Image source={alert} style={styles.imgCard}/>
-          <Text style={{fontSize: 9, color: '#fff'}}>{dataAlert}</Text>
-          <Text style={styles.textTitleCard}>ALERTA</Text>
+          <View>
+            <Text style={{fontSize:12, color: '#fff'}}>Último alerta: {dataAlert}</Text>
+            <Text style={{fontSize:12, color: '#fff'}}>Próximo HORA: {proximoAlerta}</Text>
+          </View>
+          
         </TouchableOpacity>
         <TouchableOpacity onPress={rondaListaPonto} style={styles.card}>
         <Image source={round} style={styles.imgCard}/>

@@ -221,34 +221,3 @@ const styles = StyleSheet.create({
     color: '#fff'
   }
 });
-/*
-var ultimaDataH = dayjs(dataAlert).get("hour");
-    var ultimaDataM = dayjs(dataAlert).get("minute");
-    var proximoM = ultimaDataM + 2
-
-    if(proximoM + 1 <= dayjs().format('mm')){
-      Alert.alert("ALERTA ATRASADO", "Você passou do horário previsto para o alert!");
-    }
-    
-    if(proximoM >= dayjs().format('mm') && ultimaDataH+3 >= dayjs().format('HH')){
-      Alert.alert("Ponto Alerta", "Não está no horário ainda!");
-    }else{
-      setProximoAlert(ultimaDataM+1);
-      console.log("Está na hora!");
-      try {
-        await crudService.save('time-alert', {
-          user_id,
-          company_id,
-          latestAlert
-        }).then(() => {
-          setTimeout(() => {
-            alertTime()
-            alertText.map(e => {
-              setDataAlert(e.latestAlert);
-            })
-          }, 2000)
-        })
-      } catch (error) {
-        console.log(error.response.data);
-      }
-    }*/

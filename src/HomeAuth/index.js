@@ -89,9 +89,32 @@ export default function HomeAuth({navigation}){
     const company_id = await AsyncStorage.getItem("company");
     const horarioAtual = dayjs().format('YYYY-MM-DD HH:mm:ss');
 
+    if(!dataAlert){
+      var horarioAtualH = dayjs(horarioAtual).get("hour");
+      setProximoAlerta(horarioAtualH+1);
+      try {
+        await crudService.save('time-alert', {
+          user_id,
+          company_id,
+          latestAlert: horarioAtual,
+          late: 0
+        }).then(() => {
+          Alert.alert("Alerta", "Está na HORA!");
+          setTimeout(() => {
+            alertTime()
+          }, 1000)
+        })
+      } catch (error) {
+        Alert.alert("Alerta", "HORARIO C : Ocorreu um erro inesperado! Entre em contato com o T.I RAMAL 220");
+        console.log(error.response.data);
+      }
+    return
+    }
+
     var ultimaD = dayjs(dataAlert).get("day");
     var ultimaH = dayjs(dataAlert).get("hour");
     var ultimaM = dayjs(dataAlert).get("minute");
+
     var horarioAtualD = dayjs(horarioAtual).get("day");
     var horarioAtualH = dayjs(horarioAtual).get("hour");
     var horarioAtualM = dayjs(horarioAtual).get("minute");
@@ -99,6 +122,7 @@ export default function HomeAuth({navigation}){
     console.log("ULTIMO: ",ultimaM)
     console.log("AGORA: ", horarioAtualM)
     console.log("ATÉ: ", ultimaM+4)
+
     if(ultimaM <= horarioAtualM && ultimaM + 3 >= horarioAtualM && ultimaH + 4 == horarioAtualH && ultimaD >= horarioAtualD){
       setProximoAlerta(ultimaH+4);
       try {
@@ -128,7 +152,7 @@ export default function HomeAuth({navigation}){
         }).then(() => {
           Alert.alert("Alerta", "Seu alerta foi atrasado! Foi gerado um relatório");
           setTimeout(() => {
-            alertTime()
+            alertTime();
           }, 1000)
         })
       } catch (error) {

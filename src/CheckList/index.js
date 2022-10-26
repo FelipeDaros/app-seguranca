@@ -33,10 +33,12 @@ export default function Login({ navigation }) {
 
   async function listarItensAntigo(){
     try {
-      const r = await crudService.findAll('/service-day/latest');
+      const r = await crudService.findLatestItensPost('/service-day/latest');
       const latest = [r.data];
+      //console.log(r);
       latest.map((e) => {
         setItensAnterior(e.itens);
+        console.log(e)
       })
     } catch (error) {
       console.log(error.response.data);
@@ -48,7 +50,7 @@ export default function Login({ navigation }) {
       const response = await crudService.findAllItensPost('post/itens');
       setItens(response.data);
     } catch (error) {
-      console.log(error.response.data);
+      //console.log(error.response.data);
       setItens(error.response.data);
     }
   }

@@ -58,4 +58,15 @@ export default class CrudService{
       }
     });
   }
+
+
+  async findLatestItensPost(rota){
+    const token = await AsyncStorage.getItem("token");
+    const post = await AsyncStorage.getItem("post");
+    return api.get(`${rota}/${post}`, {
+      headers: {
+        'Authorization': `Basic ${token}`
+      }
+    });
+  }
 }

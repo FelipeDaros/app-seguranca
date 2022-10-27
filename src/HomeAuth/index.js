@@ -18,6 +18,7 @@ export default function HomeAuth({navigation}){
   const [alertText, setAlertText] = useState([]);
   const [dataAlert, setDataAlert] = useState();
   const [proximoAlerta, setProximoAlerta] = useState();
+
   useEffect(() => {
     alertTime();
   }, []);
@@ -118,10 +119,6 @@ export default function HomeAuth({navigation}){
     var horarioAtualD = dayjs(horarioAtual).get("day");
     var horarioAtualH = dayjs(horarioAtual).get("hour");
     var horarioAtualM = dayjs(horarioAtual).get("minute");
-    console.log("----------------------------")
-    console.log("ULTIMO: ",ultimaM)
-    console.log("AGORA: ", horarioAtualM)
-    console.log("ATÉ: ", ultimaM+4)
 
     if(ultimaM <= horarioAtualM && ultimaM + 3 >= horarioAtualM && ultimaH + 4 == horarioAtualH && ultimaD >= horarioAtualD){
       setProximoAlerta(ultimaH+4);
@@ -141,7 +138,7 @@ export default function HomeAuth({navigation}){
         Alert.alert("Alerta", "HORARIO C : Ocorreu um erro inesperado! Entre em contato com o T.I RAMAL 220");
         console.log(error.response.data);
       }
-    }else if(ultimaM + 4 >= horarioAtualM){
+    }else if(ultimaM + 4 > horarioAtualM && ultimaH > horarioAtualH){
       setProximoAlerta(ultimaH+4);
       try {
         await crudService.save('time-alert', {

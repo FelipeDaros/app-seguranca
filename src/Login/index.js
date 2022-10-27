@@ -8,7 +8,7 @@ import * as Location from 'expo-location';
 
 
 export default function Login({ navigation }){
-  const [email, setEmail] = useState('');
+  const [name, setName] = useState('');
   const [password, setPassword] = useState('');
   const crudService = new CrudService();
   const [location, setLocation] = useState(null);
@@ -30,7 +30,7 @@ export default function Login({ navigation }){
   async function login(){
     const data = await crudService.save('/users/signin',
         {
-          email,
+          name,
           password
         }
       ).then(async (r) => {
@@ -62,9 +62,9 @@ export default function Login({ navigation }){
       <Text style={styles.textoApp}>Segurança na Mão</Text>
       <View>
         <Text style={styles.textoInput}>Email</Text>
-        <TextInput style={styles.input} value={email} onChangeText={
-          (e) => {setEmail(e)}
-        } keyboardType='email-address'/>
+        <TextInput style={styles.input} value={name} onChangeText={
+          (e) => {setName(e)}
+        } keyboardType='default'/>
       </View>
       <View>
         <Text style={styles.textoInput}>Senha</Text>

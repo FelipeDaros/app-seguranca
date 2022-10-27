@@ -12,7 +12,7 @@ export default function Login({ navigation }) {
   const [checkBoxLeitura, setcheckBoxLeitura] = useState(false);
   const [checkIten, setCheckIten] = useState([]);
   const [dados, setDados] = useState([]);
-  const [itensAnterior, setItensAnterior] = useState([]);
+  const [itensAnterior, setItensAnterior] = useState();
   const [itens, setItens] = useState([]);
   const [post, setPost] = useState('');
   const crudService = new CrudService();
@@ -34,12 +34,9 @@ export default function Login({ navigation }) {
   async function listarItensAntigo(){
     try {
       const r = await crudService.findLatestItensPost('/service-day/latest');
-      const latest = [r.data];
-      //console.log(r);
-      latest.map((e) => {
-        setItensAnterior(e.itens);
-        console.log(e)
-      })
+      const latest = r.data
+      setItensAnterior(latest);
+      console.log(itensAnterior)
     } catch (error) {
       console.log(error.response.data);
     }
@@ -120,9 +117,9 @@ export default function Login({ navigation }) {
     </View>
   )
 
-  const listarItensAnterior = ({item}) => (
+  const listarItensAnterior = ({index, item}) => (
     <View>
-      <Text style={styles.textoCheckListAnterior}>{item.name}</Text>
+      <Text style={styles.textoCheckListAnterior}>{item.itens}</Text>
     </View>
   )
 

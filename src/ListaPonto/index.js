@@ -6,26 +6,43 @@ import iconeRefresh from '../../assets/refresh-icon-10853.png';
 import IconeOff from '../../assets/icons8-off-47.png';
 import IconeOn from '../../assets/icons8-on-47.png';
 import { BarCodeScanner } from 'expo-barcode-scanner';
+import dayjs from "dayjs";
 
 
 
 export default function RondaListaPonto({navigation}) {
   const [data, setData] = useState('');
+  const [horario, setHorario] = useState();
 
   const crudService = new CrudService();
   useEffect(() => {
     roundsUser();
+    setHorario();
   },[]);
 
   const roundsUser = async() => {
     const id = await AsyncStorage.getItem("id");
-    const company_id = await AsyncStorage.getItem("company")
+    const post_id = await AsyncStorage.getItem("post")
+    
+    
     try {
-      const respose = await crudService.findAll(`/service-point/company/${company_id}`);
+      const respose = await crudService.findAll(`/service-point/point/${post_id}`);
       setData(respose.data);
     } catch (error) {
       console.log(error.response.data);
     }
+  }
+
+  const ativarRonda = async () => {
+    const horarioAtual = dayjs().format('YYYY-MM-DD HH:mm:ss');
+    var ultimoHorario = await AsyncStorage.getItem("ultimoHorario");
+    if(horarioAtual >= ultimoHorario){
+      console.log("ESTÁ NA HORA");
+    }else{
+      console.log("NÃO ESTÁ NA HORA");
+    }
+
+    var ultimo = AsyncStorage.setItem("ultimo",dayjs().format('YYYY-MM-DD HH:mm:ss'));
   }
 
   async function Ponto(id){
@@ -62,6 +79,8 @@ export default function RondaListaPonto({navigation}) {
   return (
     <View style={styles.container}>
       <Text style={styles.textoTitulo}>Lista os pontos para efetuar as rotas</Text>
+      <Button title="Ativar Ronda"/>
+      <Text style={styles.textoAtualizar}>Próximo Ronda {horario}</Text>
         <FlatList 
           data={data}
           renderItem={renderItem}

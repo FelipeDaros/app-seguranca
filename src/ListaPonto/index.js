@@ -13,6 +13,7 @@ import dayjs from "dayjs";
 export default function RondaListaPonto({navigation}) {
   const [data, setData] = useState('');
   const [horario, setHorario] = useState();
+  const [ativo, setAtivo] = useState(true);
 
   const crudService = new CrudService();
   useEffect(() => {
@@ -28,6 +29,7 @@ export default function RondaListaPonto({navigation}) {
     try {
       const respose = await crudService.findAll(`/service-point/point/${post_id}`);
       setData(respose.data);
+
     } catch (error) {
       console.log(error.response.data);
     }
@@ -36,13 +38,14 @@ export default function RondaListaPonto({navigation}) {
   const ativarRonda = async () => {
     const horarioAtual = dayjs().format('YYYY-MM-DD HH:mm:ss');
     var ultimoHorario = await AsyncStorage.getItem("ultimoHorario");
-    if(horarioAtual >= ultimoHorario){
-      console.log("ESTÁ NA HORA");
-    }else{
-      console.log("NÃO ESTÁ NA HORA");
-    }
+    var proximoHorario = dayjs(ultimoHorario).add(1, 'minute')
+    var proximoHorarioFormatado = dayjs(proximoHorario).format('YYYY-MM-DD HH:mm:ss');
 
-    var ultimo = AsyncStorage.setItem("ultimo",dayjs().format('YYYY-MM-DD HH:mm:ss'));
+    if(horarioAtual >= proximoHorarioFormatado){
+      setAtivo(false);
+    }else{
+      setAtivo(true);
+    }
   }
 
   async function Ponto(id){
@@ -67,11 +70,15 @@ export default function RondaListaPonto({navigation}) {
           style={styles.iconeStats}
         />
         }
-        <TouchableOpacity style={styles.buttonValidar} onPress={async () => {
+        {ativo == false ? <TouchableOpacity style={styles.buttonValidarAtivo} disabled={ativo} onPress={async () => {
           Ponto(item.id)
         }} key={item.id}>
           <Text style={styles.itemTexto}>Validar</Text>
-        </TouchableOpacity>
+        </TouchableOpacity> : <TouchableOpacity style={styles.buttonValidarDesativado} disabled={ativo} onPress={async () => {
+          Ponto(item.id)
+        }} key={item.id}>
+          <Text style={styles.itemTexto}>Validar</Text>
+        </TouchableOpacity>}
       </View>
     </View>
   );
@@ -79,7 +86,7 @@ export default function RondaListaPonto({navigation}) {
   return (
     <View style={styles.container}>
       <Text style={styles.textoTitulo}>Lista os pontos para efetuar as rotas</Text>
-      <Button title="Ativar Ronda"/>
+      <Button title="Ativar Ronda" onPress={ativarRonda}/>
       <Text style={styles.textoAtualizar}>Próximo Ronda {horario}</Text>
         <FlatList 
           data={data}
@@ -151,10 +158,19 @@ const styles = StyleSheet.create({
     height: 35,
     margin: 5
   },
-  buttonValidar: {
+  buttonValidarAtivo: {
     width: 60,
     height: 40,
     backgroundColor: 'green',
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderRadius: 5,
+    marginLeft: 10
+  },
+  buttonValidarDesativado: {
+    width: 60,
+    height: 40,
+    backgroundColor: '#a62519',
     alignItems: 'center',
     justifyContent: 'center',
     borderRadius: 5,

@@ -90,54 +90,54 @@ export default function HomeAuth({navigation}){
     const company_id = await AsyncStorage.getItem("company");
 
     try {
-      var t = await crudService.findOne('/time-alert/findalert/', user_id);
+      await crudService.findOne('/time-alert/findalert/', user_id);
     } catch (error) {
-      try {
-        await crudService.save('time-alert', {
-          user_id,
-          company_id,
-          latestAlert: dayjs().format('YYYY-MM-DD HH:mm:ss'),
-          late: 0
-        }).then(() => {
-          Alert.alert("Alerta", "Está na HORA!");
-          setTimeout(() => {
-            alertTime()
-          }, 1000)
-        })
-      } catch (error) {
-        Alert.alert("Alerta", "HORARIO C : Ocorreu um erro inesperado! Entre em contato com o T.I RAMAL 220");
-        console.log(error.response.data);
+      if(error.response.data.error){
+        console.log("Não tem")
+        try {
+          await crudService.save('time-alert', {
+            user_id,
+            company_id,
+            latestAlert: dayjs().format('YYYY-MM-DD HH:mm:ss'),
+            late: 0
+          })
+        } catch (error) {
+          Alert.alert("Alerta", "HORARIO C : Ocorreu um erro inesperado! Entre em contato com o T.I RAMAL 220");
+          console.log(error.response.data);
+        }
+      }else{
+        console.log("Tem")
+        var horarioBanco = dayjs(dataAlert).format('YYYY-MM-DD HH:mm:ss');
+        //console.log("HORARIO BANCO -> ",horarioBanco)
+
+        var horarioBancoAdd = dayjs(horarioBanco).add(3, 'hour');
+        var horarioBancoAddFormatado = dayjs(horarioBancoAdd).format('YYYY-MM-DD HH:mm:ss');
+        //console.log("Horario Atual BANCO FORMATADO: ", horarioBancoAddFormatado);
+        /*HORARIO DO BANCO -----------------------------------------------------------------*/
+
+        var horarioAtual = dayjs().format('YYYY-MM-DD HH:mm:ss');
+        
+        var horarioBancoProximoHorario = dayjs(horarioBancoAddFormatado).add(0, 'hour');
+        var horarioBancoProximoHorarioFormatado = dayjs(horarioBancoProximoHorario).format('YYYY-MM-DD HH:mm:ss');
+
+        var horarioBancoProximoHorarioAddMinutos = dayjs(horarioBancoProximoHorarioFormatado).add(2, 'minute');
+        var horarioBancoProximoHorarioAddMinutosFormatado = dayjs(horarioBancoProximoHorarioAddMinutos).format('YYYY-MM-DD HH:mm:ss');
+        
+        
+        console.log("Pŕoximo horário: ", horarioBancoProximoHorarioFormatado);
+        console.log("Horario Atual: ",horarioAtual);
+        console.log("PROXIMO ADD MINUTES", horarioBancoProximoHorarioAddMinutosFormatado)
+
+        if(horarioAtual > horarioBancoProximoHorarioFormatado && horarioAtual <= horarioBancoProximoHorarioAddMinutosFormatado){
+          console.log("Horario");
+        }else if(horarioAtual >= horarioBancoProximoHorarioAddMinutosFormatado){
+          console.log("PASSOU");
+        }else{
+          console.log("NÃO")
+        }
+
       }
     }
-    
-    var horarioBanco = dayjs(dataAlert).format('YYYY-MM-DD HH:mm:ss');
-    console.log("HORARIO BANCO -> ",horarioBanco)
-
-    var horarioBancoAdd = dayjs(horarioBanco).add(3, 'hour');
-    var horarioBancoAddFormatado = dayjs(horarioBancoAdd).format('YYYY-MM-DD HH:mm:ss');
-    console.log("Horario Atual BANCO FORMATADO: ", horarioBancoAddFormatado);
-    /*HORARIO DO BANCO -----------------------------------------------------------------*/
-
-    var horarioBancoAddMinutos = dayjs(horarioBancoAddFormatado).add(5, 'minute');
-    var horarioBancoAddMinutosFormatado = dayjs(horarioBancoAddMinutos).format('YYYY-MM-DD HH:mm:ss');
-    console.log("Horario do banco ADD MINUTOS: ", horarioBancoAddMinutosFormatado);
-    /*HORARIO DO BANCO ADD MINUTOS -----------------------------------------------------------------*/
-
-    var horarioAtual = dayjs().format('YYYY-MM-DD HH:mm:ss');
-    console.log("Horario Atual: ",horarioAtual);
-    var horarioBancoProximoHorario = dayjs(horarioBancoAddFormatado).add(1, 'hour');
-    var horarioBancoProximoHorarioFormatado = dayjs(horarioBancoProximoHorario).format('YYYY-MM-DD HH:mm:ss');
-    console.log("Pŕoximo horário: ", horarioBancoProximoHorarioFormatado);
-
-
-    if(horarioAtual >=  horarioBancoProximoHorarioFormatado){
-      console.log("Está na hora");
-    }else if(horarioAtual >= horarioBancoProximoHorarioFormatado && horarioBanco >= horarioBancoAddMinutosFormatado){
-      console.log("Você recebeu uma penalidade por atrasar o alerta!");
-    }else{
-      console.log("Não está na hora!")
-    }
-
     
   }
 

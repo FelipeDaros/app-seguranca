@@ -122,6 +122,7 @@ export default function HomeAuth({navigation}){
         var horarioBancoProximoHorario = dayjs(horarioBancoAddFormatado).add(1, 'hour');
         var horarioBancoProximoHorarioFormatado = dayjs(horarioBancoProximoHorario).format('YYYY-MM-DD HH:mm:ss');
         setProximoAlerta(horarioBancoProximoHorarioFormatado);
+        await AsyncStorage.setItem("proximoHorario", horarioBancoProximoHorarioFormatado);
         var horarioBancoProximoHorarioAddMinutos = dayjs(horarioBancoProximoHorarioFormatado).add(5, 'minute');
         var horarioBancoProximoHorarioAddMinutosFormatado = dayjs(horarioBancoProximoHorarioAddMinutos).format('YYYY-MM-DD HH:mm:ss');
         

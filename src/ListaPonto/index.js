@@ -37,11 +37,9 @@ export default function RondaListaPonto({navigation}) {
 
   const ativarRonda = async () => {
     const horarioAtual = dayjs().format('YYYY-MM-DD HH:mm:ss');
-    var ultimoHorario = await AsyncStorage.getItem("ultimoHorario");
-    var proximoHorario = dayjs(ultimoHorario).add(1, 'minute')
-    var proximoHorarioFormatado = dayjs(proximoHorario).format('YYYY-MM-DD HH:mm:ss');
-
-    if(horarioAtual >= proximoHorarioFormatado){
+    var proximoHorario = await AsyncStorage.getItem("proximoHorario");
+    console.log(proximoHorario)
+    if(horarioAtual >= proximoHorario){
       setAtivo(false);
     }else{
       setAtivo(true);
@@ -59,17 +57,6 @@ export default function RondaListaPonto({navigation}) {
         <View>
           <Text style={styles.itemTexto}>Local: {item.locale}</Text>
         </View>
-        {item.stats == "A" ? 
-        <Image 
-        source={IconeOff}
-        style={styles.iconeStats}
-        />
-        :
-        <Image 
-          source={IconeOn}
-          style={styles.iconeStats}
-        />
-        }
         {ativo == false ? <TouchableOpacity style={styles.buttonValidarAtivo} disabled={ativo} onPress={async () => {
           Ponto(item.id)
         }} key={item.id}>

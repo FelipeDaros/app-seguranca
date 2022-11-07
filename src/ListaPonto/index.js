@@ -1,11 +1,7 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useEffect, useState } from "react";
 import { View, Text, StyleSheet, FlatList, Button, TouchableOpacity, Image, Alert } from "react-native";
-import CrudService from '../services/crudService';
-import iconeRefresh from '../../assets/refresh-icon-10853.png';
-import IconeOff from '../../assets/icons8-off-47.png';
-import IconeOn from '../../assets/icons8-on-47.png';
-import { BarCodeScanner } from 'expo-barcode-scanner';
+import CrudService from '../services/crudService'; 
 import dayjs from "dayjs";
 
 
@@ -29,6 +25,7 @@ export default function RondaListaPonto({navigation}) {
     try {
       const respose = await crudService.findAll(`/service-point/point/${post_id}`);
       setData(respose.data);
+      console.log(respose.data);
 
     } catch (error) {
       console.log(error.response.data);
@@ -38,7 +35,10 @@ export default function RondaListaPonto({navigation}) {
   const ativarRonda = async () => {
     const horarioAtual = dayjs().format('YYYY-MM-DD HH:mm:ss');
     var proximoHorario = await AsyncStorage.getItem("proximoHorario");
-    console.log(proximoHorario)
+
+    var t = dayjs(proximoHorario).add(5, 'minute');
+
+    console.log(dayjs(t).format('YYYY-MM-DD HH:mm:ss'))
     if(horarioAtual >= proximoHorario){
       setAtivo(false);
     }else{
@@ -55,7 +55,8 @@ export default function RondaListaPonto({navigation}) {
     <View style={styles.card}>
       <View style={styles.viewCard}>
         <View>
-          <Text style={styles.itemTexto}>Local: {item.locale}</Text>
+          <Text style={styles.itemTexto}>Local</Text>
+          <Text style={styles.itemTexto}>{item.locale}</Text>
         </View>
         {ativo == false ? <TouchableOpacity style={styles.buttonValidarAtivo} disabled={ativo} onPress={async () => {
           Ponto(item.id)

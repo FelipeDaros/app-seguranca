@@ -61,7 +61,7 @@ export default function Login({ navigation }){
       />
       <Text style={styles.textoApp}>Segurança na Mão</Text>
       <View>
-        <Text style={styles.textoInput}>Email</Text>
+        <Text style={styles.textoInput}>Usuário</Text>
         <TextInput style={styles.input} value={name} onChangeText={
           (e) => {setName(e)}
         } keyboardType='default'/>

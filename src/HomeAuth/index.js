@@ -10,9 +10,12 @@ import regiserOccurence from '../../assets/regiserOccurence.png';
 import panic from '../../assets/panic.png';
 import CrudService from "../services/crudService";
 import dayjs from "dayjs";
+import ComponentButton from "../components/Button";
+import { useTheme } from "native-base";
 
 
 export default function HomeAuth({navigation}){
+  const { colors } = useTheme();
   const ONE_SECOND_IN_MS = 500;
   const crudService = new CrudService();
   const [alertText, setAlertText] = useState([]);
@@ -203,9 +206,7 @@ export default function HomeAuth({navigation}){
           <Text style={styles.textTitleCard}>CADASTRO PONTO</Text>
         </TouchableOpacity>
       </ScrollView>
-      <TouchableOpacity onPress={sair} style={styles.buttonExit}>
-          <Text style={styles.textExit}>SAIR</Text>
-        </TouchableOpacity>
+      <ComponentButton onPress={sair} m={4} title="SAIR" bgColor={colors.red[500]} ftColor={colors.white}/>
     </View>
   )
 }

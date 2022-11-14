@@ -5,9 +5,12 @@ import CrudService from "../services/crudService";
 import eskimoIcone from '../../assets/logo.png'
 import dayjs from "dayjs";
 import * as Location from 'expo-location';
+import ComponentButton from "../components/Button";
+import { useTheme } from "native-base";
 
 
 export default function Login({ navigation }){
+  const {colors} = useTheme();
   const [name, setName] = useState('');
   const [password, setPassword] = useState('');
   const crudService = new CrudService();
@@ -72,9 +75,7 @@ export default function Login({ navigation }){
           (a) => {setPassword(a)}
         } secureTextEntry={true}/>
       </View>
-      <TouchableOpacity style={styles.botaoLogin} onPress={login}>
-        <Text style={styles.textBotaoLogin}>Login</Text>
-      </TouchableOpacity>
+      <ComponentButton title="Login" m={2} ftColor={colors.white} bgColor={colors.blue[500]} onPress={login}/>
     </View>
   )
 }

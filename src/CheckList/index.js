@@ -4,11 +4,14 @@ import Checkbox from 'expo-checkbox';
 import CrudService from "../services/crudService";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import dayjs from "dayjs";
+import { useTheme, Text as TextNativeBase } from "native-base";
+import ComponentButton from "../components/Button";
 
 
 
 
 export default function Login({ navigation }) {
+  const {colors} = useTheme();
   const [checkBoxLeitura, setcheckBoxLeitura] = useState(false);
   const [checkIten, setCheckIten] = useState([]);
   const [dados, setDados] = useState([]);
@@ -148,21 +151,19 @@ export default function Login({ navigation }) {
         <Button title="Atualizar" onPress={listarItensAntigo}/>
       </View>
        <View style={styles.checkListContainer}>
-        <Text>CHECK LIST DOS EQUIPAMENTOS</Text>
+        <TextNativeBase color={colors.white} fontSize="md" m={2}>CHECK LIST DOS EQUIPAMENTOS</TextNativeBase>
           
         <FlatList 
             data={itens}
             renderItem={listAllItens}
           />
        </View>
-       <Text style={styles.checkConfirm}>Confirmar leitura do relatório anterior</Text>
+       <TextNativeBase color={colors.white} fontSize="md" m={2}>Confirmar leitura do relatório anterior</TextNativeBase>
        <Checkbox 
         value={checkBoxLeitura}
         onValueChange={setcheckBoxLeitura}
        />
-       <TouchableOpacity style={styles.buttonProseguir} onPress={startDayService}>
-        <Text style={styles.textoButtonProseguir}>Proseguir</Text>
-       </TouchableOpacity>
+       <ComponentButton title="Proseguir" m={4} ftColor={colors.white} bgColor={colors.green[600]} onPress={startDayService}/>
     </View>
   )
 }

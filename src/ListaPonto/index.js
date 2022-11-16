@@ -1,20 +1,19 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useEffect, useState } from "react";
-import { View, Text, StyleSheet, FlatList, Button, TouchableOpacity, Image, Alert } from "react-native";
+import { View, Text, StyleSheet, FlatList } from "react-native";
 import CrudService from '../services/crudService'; 
-import dayjs from "dayjs";
+import ComponentButton from "../components/Button";
+import { useTheme } from "native-base";
 
 
 
 export default function RondaListaPonto({navigation}) {
   const [data, setData] = useState('');
-  const [horario, setHorario] = useState();
-  const [ativo, setAtivo] = useState(true);
+  const {colors} = useTheme();
 
   const crudService = new CrudService();
   useEffect(() => {
     roundsUser();
-    setHorario();
   },[]);
 
   const roundsUser = async() => {
@@ -32,22 +31,7 @@ export default function RondaListaPonto({navigation}) {
     }
   }
 
-  const ativarRonda = async () => {
-    const horarioAtual = dayjs().format('YYYY-MM-DD HH:mm:ss');
-    var proximoHorario = await AsyncStorage.getItem("proximoHorario");
-
-    var t = dayjs(proximoHorario).add(5, 'minute');
-
-    console.log(dayjs(t).format('YYYY-MM-DD HH:mm:ss'))
-    if(horarioAtual >= proximoHorario){
-      setAtivo(false);
-    }else{
-      setAtivo(true);
-    }
-  }
-
   async function Ponto(id){
-
     await navigation.navigate("PontoSelecionado", {id});
   }
 
@@ -58,15 +42,7 @@ export default function RondaListaPonto({navigation}) {
           <Text style={styles.itemTexto}>Local</Text>
           <Text style={styles.itemTexto}>{item.locale}</Text>
         </View>
-        {ativo == false ? <TouchableOpacity style={styles.buttonValidarAtivo} disabled={ativo} onPress={async () => {
-          Ponto(item.id)
-        }} key={item.id}>
-          <Text style={styles.itemTexto}>Validar</Text>
-        </TouchableOpacity> : <TouchableOpacity style={styles.buttonValidarDesativado} disabled={ativo} onPress={async () => {
-          Ponto(item.id)
-        }} key={item.id}>
-          <Text style={styles.itemTexto}>Validar</Text>
-        </TouchableOpacity>}
+        <ComponentButton bgColor={colors.lightBlue[500]} m={4} title="Validar" onPress={() => {Ponto(item.id)}} key={item.id}/>
       </View>
     </View>
   );
@@ -74,8 +50,6 @@ export default function RondaListaPonto({navigation}) {
   return (
     <View style={styles.container}>
       <Text style={styles.textoTitulo}>Lista os pontos para efetuar as rotas</Text>
-      <Button title="Ativar Ronda" onPress={ativarRonda}/>
-      <Text style={styles.textoAtualizar}>Próximo Ronda {horario}</Text>
         <FlatList 
           data={data}
           renderItem={renderItem}

@@ -1,6 +1,5 @@
 import { Alert, Vibration, Text, View, StyleSheet, ScrollView, Image, TouchableOpacity, FlatList, Button } from "react-native";
 import React, {useState, useEffect} from "react";
-import * as Location from 'expo-location';
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import alert from '../../assets/alert.png';
 import point from '../../assets/point.png';
@@ -18,13 +17,52 @@ export default function HomeAuth({navigation}){
   const { colors } = useTheme();
   const ONE_SECOND_IN_MS = 500;
   const crudService = new CrudService();
-  const [alertText, setAlertText] = useState([]);
-  const [dataAlert, setDataAlert] = useState();
-  const [proximoAlerta, setProximoAlerta] = useState();
+  const [alertData, setAlertData] = useState('');
+  const [proximoAlerta, setProximoAlerta] = useState('');
 
   useEffect(() => {
-    alertTime();
-  }, []);
+    horario();
+  }, [proximoAlerta]);
+
+
+  async function horario(){
+    const id = await AsyncStorage.getItem("id");
+
+    await crudService.findOne('time-alert/', id)
+    .then(e => {
+      console.log(e.data)
+    })
+    .catch(error=> {
+      setAlertData(error.response.data)
+    });
+    
+    var horarioBanco = dayjs(alertData).format('YYYY-MM-DD HH:mm:ss')
+    var horarioAdd= dayjs(horarioBanco).add(4, 'hour');
+    setProximoAlerta(dayjs(horarioAdd).format('YYYY-MM-DD HH:mm:ss'));
+     
+  }
+
+  async function ativarAlerta(){
+    const user_id = await AsyncStorage.getItem("id");
+    const company_id = await AsyncStorage.getItem("company");
+    const horarioAtual = dayjs().format('YYYY-MM-DD HH:mm:ss')
+    if(proximoAlerta >= horarioAtual){
+      return Alert.alert("ALERTA", "Não está no horario ainda para fazer a ronda!");
+    }else{
+      try {
+        await crudService.save('time-alert', {
+          user_id,
+          company_id,
+          latestAlert: horarioAtual,
+          late: 0
+        })
+      } catch (error) {
+        Alert.alert("Alerta", "HORARIO C : Ocorreu um erro inesperado! Entre em contato com o T.I RAMAL 220");
+      }
+      horario();
+      return Alert.alert("ALERTA", "Você já pode ir fazer a ronda!");
+    }
+  }
 
   async function ativarPanico(){
     const id = await AsyncStorage.getItem("id");
@@ -72,113 +110,11 @@ export default function HomeAuth({navigation}){
     ])
   }
 
-  setTimeout(() => {
-    alertText.map(e => {
-      setDataAlert(e.latestAlert);
-    })
-  }, 1000)
-
-  async function alertTime(){
-    const id = await AsyncStorage.getItem("id");
-    try {
-      var c = await crudService.findOne('time-alert/', id);
-      setAlertText(c.data);
-    } catch (error) {
-      setAlertText(error.response.data);
-    }
-  }
-
-  async function alertaVigia(){
-    const user_id = await AsyncStorage.getItem("id");
-    const company_id = await AsyncStorage.getItem("company");
-
-    try {
-      await crudService.findOne('/time-alert/findalert/', user_id);
-    } catch (error) {
-      if(error.response.data.error){
-        console.log("Não tem")
-        try {
-          await crudService.save('time-alert', {
-            user_id,
-            company_id,
-            latestAlert: dayjs().format('YYYY-MM-DD HH:mm:ss'),
-            late: 0
-          })
-        } catch (error) {
-          Alert.alert("Alerta", "HORARIO C : Ocorreu um erro inesperado! Entre em contato com o T.I RAMAL 220");
-          console.log(error.response.data);
-        }
-      }else{
-        var horarioBanco = dayjs(dataAlert).format('YYYY-MM-DD HH:mm:ss');
-        //console.log("HORARIO BANCO -> ",horarioBanco)
-
-        var horarioBancoAdd = dayjs(horarioBanco).add(3, 'hour');
-        
-        var horarioBancoAddFormatado = dayjs(horarioBancoAdd).format('YYYY-MM-DD HH:mm:ss');
-        //console.log(horarioBancoAddFormatado)
-        
-        //console.log("Horario Atual BANCO FORMATADO: ", horarioBancoAddFormatado);
-        /*HORARIO DO BANCO -----------------------------------------------------------------*/
-
-        var horarioAtual = dayjs().format('YYYY-MM-DD HH:mm:ss');
-        
-        var horarioBancoProximoHorario = dayjs(horarioBancoAddFormatado).add(1, 'hour');
-        var horarioBancoProximoHorarioFormatado = dayjs(horarioBancoProximoHorario).format('YYYY-MM-DD HH:mm:ss');
-        setProximoAlerta(horarioBancoProximoHorarioFormatado);
-        await AsyncStorage.setItem("proximoHorario", horarioBancoProximoHorarioFormatado);
-        var horarioBancoProximoHorarioAddMinutos = dayjs(horarioBancoProximoHorarioFormatado).add(5, 'minute');
-        var horarioBancoProximoHorarioAddMinutosFormatado = dayjs(horarioBancoProximoHorarioAddMinutos).format('YYYY-MM-DD HH:mm:ss');
-        
-        
-
-        if(horarioAtual > horarioBancoProximoHorarioFormatado && horarioAtual <= horarioBancoProximoHorarioAddMinutosFormatado){
-          try {
-            await crudService.save('time-alert', {
-              user_id,
-              company_id,
-              latestAlert: horarioAtual,
-              late: 0
-            }).then(() => {
-              setTimeout(() => {
-                alertTime()
-              }, 1000)
-            })
-          } catch (error) {
-            Alert.alert("Alerta", "HORARIO C : Ocorreu um erro inesperado! Entre em contato com o T.I RAMAL 220");
-            console.log(error.response.data);
-          }
-        }else if(horarioAtual >= horarioBancoProximoHorarioAddMinutosFormatado){
-          Alert.alert("ALERTA!", "Pelo seu atraso do alerta foi gerado uma notificação");
-          try {
-            await crudService.save('time-alert', {
-              user_id,
-              company_id,
-              latestAlert: horarioAtual,
-              late: 0
-            }).then(() => {
-              setTimeout(() => {
-                alertTime()
-              }, 1000)
-            })
-          } catch (error) {
-            Alert.alert("Alerta", "HORARIO C : Ocorreu um erro inesperado! Entre em contato com o T.I RAMAL 220");
-            console.log(error.response.data);
-          }
-        }else{
-          //console.log("NÃO")
-          return
-        }
-
-      }
-    }
-    
-  }
-
   return(
     <View style={styles.container}>
       
       <ScrollView showsVerticalScrollIndicator={false} style={{marginTop: 50}}>
-        <TouchableOpacity style={styles.card} onPress={alertaVigia}>
+        <TouchableOpacity style={styles.card} onPress={ativarAlerta}>
           <Image source={alert} style={styles.imgCard}/>
           <View>
             <Text style={{fontSize:12, color: '#fff'}}>Próximo HORA: {proximoAlerta}</Text>
@@ -252,3 +188,4 @@ const styles = StyleSheet.create({
     color: '#fff'
   }
 });
+

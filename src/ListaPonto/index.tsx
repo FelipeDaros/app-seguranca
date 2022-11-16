@@ -2,13 +2,18 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useEffect, useState } from "react";
 import { View, Text, StyleSheet, FlatList } from "react-native";
 import CrudService from '../services/crudService'; 
-import ComponentButton from "../components/Button";
 import { useTheme } from "native-base";
+import ComponentButton from "../components/Button";
 
-
+interface IData{
+  id: string;
+  locale: string;
+  name: string;
+  stats: string;
+}
 
 export default function RondaListaPonto({navigation}) {
-  const [data, setData] = useState('');
+  const [data, setData] = useState<IData[]>([]);
   const {colors} = useTheme();
 
   const crudService = new CrudService();
@@ -31,7 +36,7 @@ export default function RondaListaPonto({navigation}) {
     }
   }
 
-  async function Ponto(id){
+  async function Ponto(id: string){
     await navigation.navigate("PontoSelecionado", {id});
   }
 
@@ -42,7 +47,7 @@ export default function RondaListaPonto({navigation}) {
           <Text style={styles.itemTexto}>Local</Text>
           <Text style={styles.itemTexto}>{item.locale}</Text>
         </View>
-        <ComponentButton bgColor={colors.lightBlue[500]} m={4} title="Validar" onPress={() => {Ponto(item.id)}} key={item.id}/>
+        <ComponentButton bgColor={colors.lightBlue[500]} ftColor="white" m={4} title="Validar" onPress={() => {Ponto(item.id)}} key={item.id}/>
       </View>
     </View>
   );

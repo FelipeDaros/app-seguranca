@@ -163,7 +163,7 @@ export default function Login({ navigation }) {
         value={checkBoxLeitura}
         onValueChange={setcheckBoxLeitura}
        />
-       <ComponentButton title="Proseguir" m={4} ftColor={colors.white} bgColor={colors.green[600]} onPress={startDayService}/>
+       <ComponentButton title="Proseguir" m={4} ftColor={colors.white} bgColor={colors.green[700]} onPress={startDayService}/>
     </View>
   )
 }

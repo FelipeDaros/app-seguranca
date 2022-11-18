@@ -4,6 +4,7 @@ import { View, Text, StyleSheet, FlatList } from "react-native";
 import CrudService from '../services/crudService'; 
 import { useTheme } from "native-base";
 import ComponentButton from "../components/Button";
+import dayjs from "dayjs";
 
 interface IData{
   id: string;
@@ -13,6 +14,7 @@ interface IData{
 }
 
 export default function RondaListaPonto({navigation}) {
+  const [loading, setLoading] = useState(false);
   const [data, setData] = useState<IData[]>([]);
   const {colors} = useTheme();
 
@@ -37,7 +39,15 @@ export default function RondaListaPonto({navigation}) {
   }
 
   async function Ponto(id: string){
-    await navigation.navigate("PontoSelecionado", {id});
+    const horario = await AsyncStorage.getItem("horario");
+    const horarioAtual = dayjs().format('YYYY-MM-DD HH:mm:ss')
+    setLoading(true);
+    console.log(horario)
+    if(horarioAtual >= horario){
+      await navigation.navigate("PontoSelecionado", {id});
+    }else{
+      setLoading(false);
+    }
   }
 
   const renderItem = ({ item }) => (
@@ -47,7 +57,7 @@ export default function RondaListaPonto({navigation}) {
           <Text style={styles.itemTexto}>Local</Text>
           <Text style={styles.itemTexto}>{item.locale}</Text>
         </View>
-        <ComponentButton bgColor={colors.lightBlue[500]} ftColor="white" m={4} title="Validar" onPress={() => {Ponto(item.id)}} key={item.id}/>
+        <ComponentButton bgColor={colors.lightBlue[500]} isLoading={loading} ftColor="white" m={4} title="Validar" onPress={() => {Ponto(item.id)}} key={item.id}/>
       </View>
     </View>
   );

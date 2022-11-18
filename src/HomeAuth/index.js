@@ -60,6 +60,7 @@ export default function HomeAuth({navigation}){
         Alert.alert("Alerta", "HORARIO C : Ocorreu um erro inesperado! Entre em contato com o T.I RAMAL 220");
       }
       horario();
+      await AsyncStorage.setItem("horario", horarioAtual);
       return Alert.alert("ALERTA", "Você já pode ir fazer a ronda!");
     }
   }

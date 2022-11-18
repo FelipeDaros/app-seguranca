@@ -1,6 +1,6 @@
-import {Button} from "native-base"
+import {Button, IButtonProps} from "native-base"
 
-interface IProps{
+type IProps = IButtonProps & {
   title: string;
   ftColor: string;
   bgColor: string | object;
@@ -8,9 +8,9 @@ interface IProps{
   m: string | number;
 }
 
-export default function ComponentButton({title, ftColor, bgColor, onPress, m}: IProps){
+export default function ComponentButton({title, ftColor, bgColor, onPress, m, ...rest}: IProps){
   return(
-    <Button m={m} color={ftColor} bg={bgColor} onPress={onPress}>
+    <Button m={m} color={ftColor} bg={bgColor} onPress={onPress} {...rest}>
       {title}
     </Button>
   )

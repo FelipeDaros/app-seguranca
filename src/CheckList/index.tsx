@@ -7,14 +7,21 @@ import dayjs from "dayjs";
 import { useTheme, Text as TextNativeBase } from "native-base";
 import ComponentButton from "../components/Button";
 
-
+type Idata = {
+  user_id: string;
+  itens: string[];
+  post_id: string;
+  created_at: Date;
+  report_reading: boolean;
+}
 
 
 export default function Login({ navigation }) {
   const {colors} = useTheme();
-  const [checkBoxLeitura, setcheckBoxLeitura] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [checkBoxLeitura, setcheckBoxLeitura] = useState<boolean>(false);
   const [checkIten, setCheckIten] = useState([]);
-  const [dados, setDados] = useState([]);
+  const [dados, setDados] = useState<Idata[]>([]);
   const [itensAnterior, setItensAnterior] = useState();
   const [itens, setItens] = useState([]);
   const [post, setPost] = useState('');
@@ -64,6 +71,7 @@ export default function Login({ navigation }) {
             const id = await AsyncStorage.getItem("id");
             const post = await AsyncStorage.getItem("post")
             var nameItens = [];
+            setLoading(true);
             checkIten.map(e => nameItens.push(e.name));
             await crudService.save("/service-day", {
               user_id: id,
@@ -89,6 +97,7 @@ export default function Login({ navigation }) {
       const id = await AsyncStorage.getItem("id");
       const post = await AsyncStorage.getItem("post")
       var nameItens = [];
+      setLoading(true);
       checkIten.map(e => nameItens.push(e.name));
       await crudService.save("/service-day", {
         user_id: id,
@@ -163,7 +172,7 @@ export default function Login({ navigation }) {
         value={checkBoxLeitura}
         onValueChange={setcheckBoxLeitura}
        />
-       <ComponentButton title="Proseguir" m={4} ftColor={colors.white} bgColor={colors.green[700]} onPress={startDayService}/>
+       <ComponentButton title="Proseguir" m={4} ftColor={colors.white} bgColor={colors.green[700]} isLoading={loading} onPress={startDayService}/>
     </View>
   )
 }

@@ -11,6 +11,7 @@ import { useTheme } from "native-base";
 
 export default function Login({ navigation }){
   const {colors} = useTheme();
+  const [loading, setLoading] = useState(false);
   const [name, setName] = useState('');
   const [password, setPassword] = useState('');
   const crudService = new CrudService();
@@ -31,6 +32,7 @@ export default function Login({ navigation }){
   }, []);
 
   async function login(){
+    setLoading(true);
     const data = await crudService.save('/users/signin',
         {
           name,
@@ -50,6 +52,7 @@ export default function Login({ navigation }){
         }
       }).catch(async (e) => {
         await navigation.navigate("Login");
+        setLoading(false)
         Alert.alert(`Usuário ${email}`, 'Email ou senha incorretas');
       })
     
@@ -75,7 +78,7 @@ export default function Login({ navigation }){
           (a) => {setPassword(a)}
         } secureTextEntry={true}/>
       </View>
-      <ComponentButton title="Login" m={2} ftColor={colors.white} bgColor={colors.blue[500]} onPress={login}/>
+      <ComponentButton title="Login" m={2} isLoading={loading} ftColor={colors.white} bgColor={colors.blue[500]} onPress={login}/>
     </View>
   )
 }

@@ -11,45 +11,51 @@ import CrudService from "../services/crudService";
 import dayjs from "dayjs";
 import ComponentButton from "../components/Button";
 import { useTheme } from "native-base";
+import Loading from "../components/Loading";
+import { ROUND_COLLECTION } from "../storage/storageConfig";
+import { createRounds } from "../services/createRounds";
 
+type Panic = {
+  user_id: string,
+  stats: number,
+  date: string
+}
 
 export default function HomeAuth({navigation}){
+  const [loading, setLoading] = useState(false);
   const { colors } = useTheme();
   const ONE_SECOND_IN_MS = 500;
   const crudService = new CrudService();
   const [alertData, setAlertData] = useState('');
   const [proximoAlerta, setProximoAlerta] = useState('');
 
-  useEffect(() => {
-    horario();
-  }, [proximoAlerta]);
-
-
   async function horario(){
     const id = await AsyncStorage.getItem("id");
-
+    setLoading(true);
     await crudService.findOne('time-alert/', id)
     .then(e => {
       console.log(e.data)
     })
     .catch(error=> {
       setAlertData(error.response.data)
-    });
+    }).finally(() => setLoading(false));
     
     var horarioBanco = dayjs(alertData).format('YYYY-MM-DD HH:mm:ss')
     var horarioAdd= dayjs(horarioBanco).add(4, 'hour');
     setProximoAlerta(dayjs(horarioAdd).format('YYYY-MM-DD HH:mm:ss'));
-     
   }
 
   async function ativarAlerta(){
+    setLoading(true);
     const user_id = await AsyncStorage.getItem("id");
     const company_id = await AsyncStorage.getItem("company");
     const horarioAtual = dayjs().format('YYYY-MM-DD HH:mm:ss')
     if(proximoAlerta >= horarioAtual){
+      setLoading(false);
       return Alert.alert("ALERTA", "Não está no horario ainda para fazer a ronda!");
     }else{
       try {
+        createRounds();
         await crudService.save('time-alert', {
           user_id,
           company_id,
@@ -60,6 +66,7 @@ export default function HomeAuth({navigation}){
         Alert.alert("Alerta", "HORARIO C : Ocorreu um erro inesperado! Entre em contato com o T.I RAMAL 220");
       }
       horario();
+      setLoading(false);
       await AsyncStorage.setItem("horario", horarioAtual);
       return Alert.alert("ALERTA", "Você já pode ir fazer a ronda!");
     }
@@ -67,11 +74,16 @@ export default function HomeAuth({navigation}){
 
   async function ativarPanico(){
     const id = await AsyncStorage.getItem("id");
+
+    const data: Panic = {
+      user_id: id,
+      stats: 1,
+      date: dayjs().format('YYYY-MM-DD HH:mm:ss')
+    }
+    
     try {
       crudService.save('/panic',{
-        user_id: id,
-        stats: 1,
-        date: dayjs().format('YYYY-MM-DD HH:mm:ss')
+        data
       }).then(() => {
         Alert.alert('Você ativou o botão do PÂNICO!', 'ALERTA PÂNICO');
         Vibration.vibrate(1*ONE_SECOND_IN_MS);
@@ -111,17 +123,25 @@ export default function HomeAuth({navigation}){
     ])
   }
 
+  useEffect(() => {
+    horario();
+  }, [proximoAlerta]);
+
   return(
     <View style={styles.container}>
       
       <ScrollView showsVerticalScrollIndicator={false} style={{marginTop: 50}}>
+        {loading ? 
+        <TouchableOpacity style={styles.card}>
+          <Loading />
+        </TouchableOpacity> 
+        : 
         <TouchableOpacity style={styles.card} onPress={ativarAlerta}>
           <Image source={alert} style={styles.imgCard}/>
           <View>
             <Text style={{fontSize:12, color: '#fff'}}>Próximo HORA: {proximoAlerta}</Text>
           </View>
-          
-        </TouchableOpacity>
+        </TouchableOpacity>}
         <TouchableOpacity onPress={rondaListaPonto} style={styles.card}>
         <Image source={round} style={styles.imgCard}/>
           <Text style={styles.textTitleCard}>RONDA</Text>

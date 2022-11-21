@@ -5,6 +5,9 @@ import CrudService from '../services/crudService';
 import { useTheme } from "native-base";
 import ComponentButton from "../components/Button";
 import dayjs from "dayjs";
+import { RoundCreate } from "../storage/round/roundCreate";
+import { roudsFindAll } from "../storage/round/roundFindAll";
+import { ROUND_COLLECTION } from "../storage/storageConfig";
 
 interface IData{
   id: string;
@@ -18,10 +21,9 @@ export default function RondaListaPonto({navigation}) {
   const [data, setData] = useState<IData[]>([]);
   const {colors} = useTheme();
 
-  const crudService = new CrudService();
   useEffect(() => {
     roundsUser();
-  },[]);
+  },[loading]);
 
   const roundsUser = async() => {
     const id = await AsyncStorage.getItem("id");
@@ -29,9 +31,10 @@ export default function RondaListaPonto({navigation}) {
     
     
     try {
-      const respose = await crudService.findAll(`/service-point/point/${post_id}`);
-      setData(respose.data);
-      console.log(respose.data);
+      const rounds = await AsyncStorage.getItem(ROUND_COLLECTION);
+      setData(JSON.parse(rounds));
+      setLoading(false);
+      //console.log(JSON.parse(rounds));
 
     } catch (error) {
       console.log(error.response.data);

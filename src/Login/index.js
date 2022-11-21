@@ -54,7 +54,7 @@ export default function Login({ navigation }){
         await navigation.navigate("Login");
         setLoading(false)
         Alert.alert(`Usuário ${email}`, 'Email ou senha incorretas');
-      })
+      }).finally(() => setLoading(false))
     
     return data;  
   }

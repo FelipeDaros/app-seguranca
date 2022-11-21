@@ -4,7 +4,7 @@ import { Center, Spinner, useTheme} from "native-base";
 export default function Loading(){
   const {colors} = useTheme()
   return(
-    <Center flex={1} bg="gray.700">
+    <Center flex={1}>
       <Spinner color="white"/>
     </Center>
   )

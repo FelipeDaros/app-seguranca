@@ -6,6 +6,7 @@ import { BarCodeScanner } from 'expo-barcode-scanner';
 import dayjs from "dayjs";
 import utc from "dayjs/plugin/utc";
 import * as Location from 'expo-location';
+import { roundRemoveById } from "../storage/round/roundRemoveById";
 
 
 export default function PontoSelecionado(props){
@@ -63,6 +64,7 @@ export default function PontoSelecionado(props){
     setLocation(location);
     const {coords} = location
     dayjs.extend(utc);
+    
     try {
       await crudService.save('/round', {
         user_id: id,
@@ -74,6 +76,7 @@ export default function PontoSelecionado(props){
       }).then(async () => {
         await props.navigation.navigate('RondaListaPonto');
       })
+      roundRemoveById(props.route.params.id);
     } catch (error) {
       var err = error.response.data
       Alert.alert('Ocorreu um erro!', `${err.error}`);

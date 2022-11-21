@@ -84,7 +84,7 @@ export default function Login({ navigation }) {
             }).catch(e => {
               console.log(e.response.data);
               return
-            })
+            }).finally(() => setLoading(false))
           }
         },
         {
@@ -110,7 +110,7 @@ export default function Login({ navigation }) {
       }).catch(e => {
         console.log(e.response.data);
         return
-      })
+      }).finally(() => setLoading(false))
       await navigation.navigate("HomeAuth")
     }
   }

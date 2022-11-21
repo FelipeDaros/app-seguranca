@@ -1,13 +1,12 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useEffect, useState } from "react";
 import { View, Text, StyleSheet, FlatList } from "react-native";
-import CrudService from '../services/crudService'; 
 import { useTheme } from "native-base";
 import ComponentButton from "../components/Button";
 import dayjs from "dayjs";
-import { RoundCreate } from "../storage/round/roundCreate";
-import { roudsFindAll } from "../storage/round/roundFindAll";
 import { ROUND_COLLECTION } from "../storage/storageConfig";
+import * as Network from 'expo-network';
+
 
 interface IData{
   id: string;
@@ -26,10 +25,8 @@ export default function RondaListaPonto({navigation}) {
   },[loading]);
 
   const roundsUser = async() => {
-    const id = await AsyncStorage.getItem("id");
-    const post_id = await AsyncStorage.getItem("post")
-    
-    
+    const {isConnected, type} = await Network.getNetworkStateAsync();
+    console.log(isConnected ? "Você está conectado" : "Você está offline!");
     try {
       const rounds = await AsyncStorage.getItem(ROUND_COLLECTION);
       setData(JSON.parse(rounds));

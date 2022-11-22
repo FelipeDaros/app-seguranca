@@ -5,7 +5,6 @@ import { useFonts, Roboto_400Regular, Roboto_700Bold } from "@expo-google-fonts/
 import Loading from "./src/components/Loading";
 import { NativeBaseProvider, StatusBar } from 'native-base';
 import theme from "./src/styles/theme";
-import NewHome from "./src/screens/Home";
 export default function App() {
   const [fontsLoaded] = useFonts({Roboto_400Regular, Roboto_700Bold});
   

@@ -1,7 +1,7 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useEffect, useState } from "react";
 import { View, Text, StyleSheet, FlatList } from "react-native";
-import { useTheme } from "native-base";
+import { HStack, useTheme, VStack } from "native-base";
 import ComponentButton from "../components/Button";
 import dayjs from "dayjs";
 import { ROUND_COLLECTION } from "../storage/storageConfig";
@@ -19,10 +19,6 @@ export default function RondaListaPonto({navigation}) {
   const [loading, setLoading] = useState(false);
   const [data, setData] = useState<IData[]>([]);
   const {colors} = useTheme();
-
-  useEffect(() => {
-    roundsUser();
-  },[loading]);
 
   const roundsUser = async() => {
     const {isConnected, type} = await Network.getNetworkStateAsync();
@@ -52,15 +48,19 @@ export default function RondaListaPonto({navigation}) {
 
   const renderItem = ({ item }) => (
     <View style={styles.card}>
-      <View style={styles.viewCard}>
-        <View>
+      <HStack>
+        <VStack>
           <Text style={styles.itemTexto}>Local</Text>
           <Text style={styles.itemTexto}>{item.locale}</Text>
-        </View>
+        </VStack>
         <ComponentButton bgColor={colors.lightBlue[500]} isLoading={loading} ftColor="white" m={4} title="Validar" onPress={() => {Ponto(item.id)}} key={item.id}/>
-      </View>
+      </HStack>
     </View>
   );
+
+  useEffect(() => {
+    roundsUser();
+  },[loading, data]);
 
   return (
     <View style={styles.container}>
@@ -99,7 +99,7 @@ const styles = StyleSheet.create({
     width: 300,
     height: 80,
     borderRadius: 5,
-    justifyContent: 'center',
+    justifyContent: 'space-between',
     alignItems: 'center',
     margin: 20
   },

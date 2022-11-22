@@ -125,7 +125,7 @@ export default function HomeAuth({navigation}){
 
   useEffect(() => {
     horario();
-  }, [proximoAlerta]);
+  }, [proximoAlerta, alertData]);
 
   return(
     <View style={styles.container}>

@@ -1,7 +1,7 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useEffect, useState } from "react";
 import { View, Text, StyleSheet, FlatList } from "react-native";
-import { HStack, useTheme, VStack } from "native-base";
+import { Center, HStack, useTheme, VStack } from "native-base";
 import ComponentButton from "../components/Button";
 import dayjs from "dayjs";
 import { ROUND_COLLECTION } from "../storage/storageConfig";
@@ -22,7 +22,6 @@ export default function RondaListaPonto({navigation}) {
 
   const roundsUser = async() => {
     const {isConnected, type} = await Network.getNetworkStateAsync();
-    console.log(isConnected ? "Você está conectado" : "Você está offline!");
     try {
       const rounds = await AsyncStorage.getItem(ROUND_COLLECTION);
       setData(JSON.parse(rounds));
@@ -49,7 +48,7 @@ export default function RondaListaPonto({navigation}) {
   const renderItem = ({ item }) => (
     <View style={styles.card}>
       <HStack>
-        <VStack>
+        <VStack justifyContent="center" flex={1}>
           <Text style={styles.itemTexto}>Local</Text>
           <Text style={styles.itemTexto}>{item.locale}</Text>
         </VStack>

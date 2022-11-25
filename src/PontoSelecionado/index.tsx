@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { StyleSheet, Text, View, Button, Alert, TouchableOpacity } from "react-native";
+import { StyleSheet,View, Button, Alert, TouchableOpacity } from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import CrudService from "../services/crudService";
 import { BarCodeScanner } from 'expo-barcode-scanner';
@@ -7,9 +7,16 @@ import dayjs from "dayjs";
 import utc from "dayjs/plugin/utc";
 import * as Location from 'expo-location';
 import { roundRemoveById } from "../storage/round/roundRemoveById";
+import Loading from "../components/Loading";
+import ComponentButton from "../components/Button";
+import { Text, useTheme, Button as NativeBase } from "native-base";
+import { useNavigation } from "@react-navigation/native";
+import * as Network from 'expo-network';
+import { RoundSaveOffiline } from "../storage/round/roundSaveOffline";
 
 
 export default function PontoSelecionado(props){
+  const [loading, setLoading] = useState(false);
   const crudService = new CrudService();
   const [data, setData] = useState('');
   const [errorMsg, setErrorMsg] = useState(null);
@@ -18,6 +25,9 @@ export default function PontoSelecionado(props){
   const [scanned, setScanned] = useState(false);
   const [isActive, setIsActive] = useState(false);
   const [text, setText] = useState('');
+  const {colors} = useTheme();
+  const navigation = useNavigation();
+  
 
   useEffect(() => {
     listarPontoSelecionado();
@@ -59,12 +69,11 @@ export default function PontoSelecionado(props){
   }
 
   async function enviarQRCODE(){
-    let location = await Location.getCurrentPositionAsync({});
+    const {coords} = await Location.getCurrentPositionAsync({});
+    const { latitude, longitude } = coords;
     const id = await AsyncStorage.getItem("id");
-    setLocation(location);
-    const {coords} = location
-    dayjs.extend(utc);
-    
+
+    setLoading(true);
     try {
       await crudService.save('/round', {
         user_id: id,
@@ -73,14 +82,14 @@ export default function PontoSelecionado(props){
         data: dayjs().format('YYYY-MM-DD HH:mm:ss'),
         latitude: Number(coords.latitude),
         longitude: Number(coords.longitude)
-      }).then(async () => {
-        await props.navigation.navigate('RondaListaPonto');
-      })
-      roundRemoveById(props.route.params.id);
+      }).then(() => {
+        roundRemoveById(props.route.params.id);
+        navigation.goBack()
+      }).finally(() => setLoading(false))
     } catch (error) {
-      var err = error.response.data
-      Alert.alert('Ocorreu um erro!', `${err.error}`);
+      Alert.alert(error.response.data);
     }
+
   }
 
   const handleBarCodeScanned = async ({ type, data }) => {
@@ -104,14 +113,26 @@ export default function PontoSelecionado(props){
           <Text style={{color: '#fff'}}>Fechar</Text>
         </TouchableOpacity> 
         : 
-        <TouchableOpacity onPress={() => setIsActive(true)} style={styles.button}>
-          <Text style={{color: '#fff'}}>Scanner</Text>
-        </TouchableOpacity>
+        <ComponentButton 
+          title="Scanner"
+          color={colors.white}
+          onPress={() => setIsActive(true)}
+          m={2}
+          isLoading={loading}
+          bgColor={colors.blue[700]}
+          ftColor={colors.white}
+        />
         }
-        {text != '' || null || undefined ? <TouchableOpacity onPress={enviarQRCODE} style={styles.buttonSend}>
-            <Text style={{color: '#fff'}}>ENVIAR</Text>
-          </TouchableOpacity> : <></>
-          
+        {text != '' || null || undefined ? 
+        <ComponentButton 
+          isLoading={loading} 
+          bgColor={colors.green[700]} 
+          title="Enviar" 
+          ftColor="white" 
+          onPress={enviarQRCODE} 
+          m={2}
+        />
+        : <></>  
         }
     </View>
   )
@@ -148,3 +169,30 @@ const styles = StyleSheet.create({
     margin: 10
   }
 });
+
+
+
+/* const {isConnected, type} = await Network.getNetworkStateAsync();
+    let location = await Location.getCurrentPositionAsync({});
+    
+    setLocation(location);
+    const {coords} = location
+    //dayjs.extend(utc);
+    setLoading(true);
+    try {
+      await crudService.save('/round', {
+        user_id: id,
+        point_id: props.route.params.id,
+        locale: text,
+        data: dayjs().format('YYYY-MM-DD HH:mm:ss'),
+        latitude: Number(coords.latitude),
+        longitude: Number(coords.longitude)
+      }).then(() => {
+        navigation.goBack();
+      });
+      
+    } catch (error) {
+      console.log(error)
+      var err = error.response.data
+      Alert.alert('Ocorreu um erro!', `${err.error}`);
+    }*/

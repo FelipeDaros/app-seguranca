@@ -5,7 +5,6 @@ import { Center, HStack, useTheme, VStack } from "native-base";
 import ComponentButton from "../components/Button";
 import dayjs from "dayjs";
 import { ROUND_COLLECTION } from "../storage/storageConfig";
-import * as Network from 'expo-network';
 
 
 interface IData{
@@ -21,7 +20,7 @@ export default function RondaListaPonto({navigation}) {
   const {colors} = useTheme();
 
   const roundsUser = async() => {
-    const {isConnected, type} = await Network.getNetworkStateAsync();
+    
     try {
       const rounds = await AsyncStorage.getItem(ROUND_COLLECTION);
       setData(JSON.parse(rounds));
@@ -37,7 +36,7 @@ export default function RondaListaPonto({navigation}) {
     const horario = await AsyncStorage.getItem("horario");
     const horarioAtual = dayjs().format('YYYY-MM-DD HH:mm:ss')
     setLoading(true);
-    console.log(horario)
+    //console.log(horario)
     if(horarioAtual >= horario){
       await navigation.navigate("PontoSelecionado", {id});
     }else{
@@ -52,7 +51,15 @@ export default function RondaListaPonto({navigation}) {
           <Text style={styles.itemTexto}>Local</Text>
           <Text style={styles.itemTexto}>{item.locale}</Text>
         </VStack>
-        <ComponentButton bgColor={colors.lightBlue[500]} isLoading={loading} ftColor="white" m={4} title="Validar" onPress={() => {Ponto(item.id)}} key={item.id}/>
+        <ComponentButton 
+          bgColor={colors.lightBlue[500]} 
+          isLoading={loading} 
+          ftColor="white" 
+          m={4} 
+          title="Validar" 
+          onPress={() => {Ponto(item.id)}} 
+          key={item.id}
+        />
       </HStack>
     </View>
   );

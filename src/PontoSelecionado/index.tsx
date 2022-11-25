@@ -1,23 +1,27 @@
 import React, { useEffect, useState } from "react";
 import { StyleSheet, Text, View, Button, Alert, TouchableOpacity } from "react-native";
+import { Button as NativeBaseButton, Text as NativeBaseText } from "native-base";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import CrudService from "../services/crudService";
 import { BarCodeScanner } from 'expo-barcode-scanner';
 import dayjs from "dayjs";
-import utc from "dayjs/plugin/utc";
 import * as Location from 'expo-location';
 import { roundRemoveById } from "../storage/round/roundRemoveById";
+import { useNavigation } from "@react-navigation/native";
 
 
 export default function PontoSelecionado(props){
+  const [loading, setLoading] = useState(false);
+  const [loadingScan, setLoadingScan] = useState(false);
   const crudService = new CrudService();
   const [data, setData] = useState('');
   const [errorMsg, setErrorMsg] = useState(null);
-  const [location, setLocation] = useState(null);
   const [hasPermissionBarCode, setHasPermissionBarCode] = useState(null);
   const [scanned, setScanned] = useState(false);
   const [isActive, setIsActive] = useState(false);
   const [text, setText] = useState('');
+
+  const navigation = useNavigation();
 
   useEffect(() => {
     listarPontoSelecionado();
@@ -59,24 +63,25 @@ export default function PontoSelecionado(props){
   }
 
   async function enviarQRCODE(){
-    let location = await Location.getCurrentPositionAsync({});
+    const {coords} = await Location.getCurrentPositionAsync({});
+    const { latitude, longitude } = coords;
     const id = await AsyncStorage.getItem("id");
-    setLocation(location);
-    const {coords} = location
-    dayjs.extend(utc);
-    
+    setLoading(true);
     try {
       await crudService.save('/round', {
         user_id: id,
         point_id: props.route.params.id,
         locale: text,
         data: dayjs().format('YYYY-MM-DD HH:mm:ss'),
-        latitude: Number(coords.latitude),
-        longitude: Number(coords.longitude)
-      }).then(async () => {
-        await props.navigation.navigate('RondaListaPonto');
-      })
-      roundRemoveById(props.route.params.id);
+        latitude,
+        longitude
+      }).then(() => {
+        roundRemoveById(props.route.params.id);
+        navigation.goBack();
+      }).finally(() => {
+        setLoading(false);
+        setLoadingScan(false);
+      });
     } catch (error) {
       var err = error.response.data
       Alert.alert('Ocorreu um erro!', `${err.error}`);
@@ -86,6 +91,7 @@ export default function PontoSelecionado(props){
   const handleBarCodeScanned = async ({ type, data }) => {
     setText(data);
     setScanned(true);
+    setLoadingScan(true);
     scanned == true ? setIsActive(false) : setIsActive(true);
   };
  
@@ -103,16 +109,30 @@ export default function PontoSelecionado(props){
         <TouchableOpacity onPress={() => setIsActive(false)} style={styles.button}>
           <Text style={{color: '#fff'}}>Fechar</Text>
         </TouchableOpacity> 
+        :
+        <NativeBaseButton 
+          bg="blue.700"
+          w="1/3"
+          mb="10"
+          onPress={() => setIsActive(true)}
+          isLoading={loadingScan}
+        >
+          <NativeBaseText color="white">
+            Scannner
+          </NativeBaseText>
+        </NativeBaseButton>
+        }
+        {text != '' || null || undefined ? 
+        <NativeBaseButton 
+          bg="green.700" 
+          w="1/3" 
+          onPress={enviarQRCODE} 
+          isLoading={loading}
+        >
+          <NativeBaseText color="white">Enviar</NativeBaseText>
+        </NativeBaseButton> 
         : 
-        <TouchableOpacity onPress={() => setIsActive(true)} style={styles.button}>
-          <Text style={{color: '#fff'}}>Scanner</Text>
-        </TouchableOpacity>
-        }
-        {text != '' || null || undefined ? <TouchableOpacity onPress={enviarQRCODE} style={styles.buttonSend}>
-            <Text style={{color: '#fff'}}>ENVIAR</Text>
-          </TouchableOpacity> : <></>
-          
-        }
+        <></>}
     </View>
   )
 }

@@ -17,6 +17,7 @@ import { RoundSaveOffiline } from "../storage/round/roundSaveOffline";
 
 export default function PontoSelecionado(props){
   const [loading, setLoading] = useState(false);
+  const [loadingScan, setLoadingScan] = useState(false);
   const crudService = new CrudService();
   const [data, setData] = useState('');
   const [errorMsg, setErrorMsg] = useState(null);
@@ -80,21 +81,23 @@ export default function PontoSelecionado(props){
         point_id: props.route.params.id,
         locale: text,
         data: dayjs().format('YYYY-MM-DD HH:mm:ss'),
-        latitude: Number(coords.latitude),
-        longitude: Number(coords.longitude)
+        latitude,
+        longitude
       }).then(() => {
         roundRemoveById(props.route.params.id);
         navigation.goBack()
       }).finally(() => setLoading(false))
     } catch (error) {
-      Alert.alert(error.response.data);
+      Alert.alert("Não está no local",error.response.data.error);
     }
 
   }
 
   const handleBarCodeScanned = async ({ type, data }) => {
     setText(data);
+    console.log(data)
     setScanned(true);
+    setLoadingScan(true);
     scanned == true ? setIsActive(false) : setIsActive(true);
   };
  
@@ -118,7 +121,7 @@ export default function PontoSelecionado(props){
           color={colors.white}
           onPress={() => setIsActive(true)}
           m={2}
-          isLoading={loading}
+          isLoading={loadingScan}
           bgColor={colors.blue[700]}
           ftColor={colors.white}
         />

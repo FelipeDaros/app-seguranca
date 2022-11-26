@@ -34,7 +34,6 @@ export default function HomeAuth({navigation}){
     setLoading(true);
     await crudService.findOne('time-alert/', id)
     .then(e => {
-      console.log(e.data)
     })
     .catch(error=> {
       setAlertData(error.response.data)
@@ -89,7 +88,6 @@ export default function HomeAuth({navigation}){
         Vibration.vibrate(1*ONE_SECOND_IN_MS);
       })
     } catch (error) {
-      console.log(error)
       Alert.alert("Alerta", "Ocorreu um erro inesperado! Entre em contato com o T.I RAMAL 220");
     }
   }

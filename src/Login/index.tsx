@@ -1,4 +1,4 @@
-import { Text, View, StyleSheet, TextInput, TouchableOpacity, Alert, Image } from "react-native";
+import { StyleSheet, Alert, Image } from "react-native";
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import React, {useState, useEffect} from "react";
 import CrudService from "../services/crudService";
@@ -6,7 +6,12 @@ import eskimoIcone from '../../assets/logo.png'
 import dayjs from "dayjs";
 import * as Location from 'expo-location';
 import ComponentButton from "../components/Button";
-import { useTheme } from "native-base";
+import { 
+  useTheme, 
+  Text as NativeBaseText, 
+  VStack, Input as NativeBaseInput, Center 
+} from "native-base";
+import { ComponentInput } from "../components/Input";
 
 
 export default function Login({ navigation }){
@@ -53,73 +58,81 @@ export default function Login({ navigation }){
       }).catch(async (e) => {
         await navigation.navigate("Login");
         setLoading(false)
-        Alert.alert(`Usuário ${email}`, 'Email ou senha incorretas');
+        Alert.alert(`Usuário ${name}`, 'Usuário ou senha incorretas');
       }).finally(() => setLoading(false))
     
     return data;  
   }
 
   return (
-    <View style={styles.container}>
-      <Image 
-        source={eskimoIcone}
-        style={{width: 220, height: 119, marginBottom: 15}}
+    <VStack  
+      backgroundColor="#4889BF" 
+      flex={1}
+      justifyContent="center"
+    >
+      <Center>
+        <Image 
+          source={eskimoIcone}
+          style={{width: 220, height: 119, marginBottom: 15}}
+        />
+      </Center>
+      <NativeBaseText 
+          color="white" 
+          fontFamily="heading"
+          textAlign="center"
+          fontSize="3xl"
+          mb="10"
+        >
+          Segurança na mão
+      </NativeBaseText>
+      <VStack>
+        <NativeBaseText 
+          color="white" 
+          fontFamily="heading"
+          textAlign="center"
+          fontSize="lg"
+        >
+          Usuário
+        </NativeBaseText>
+        <ComponentInput 
+          mx="16"
+          my="4"
+          h={8}
+          value={name} 
+          onChangeText={
+            (e) => {setName(e)}
+          }
+          textAlign="center"
+        />
+      </VStack>
+      <VStack>
+      <NativeBaseText 
+          color="white" 
+          fontFamily="heading"
+          textAlign="center"
+          fontSize="lg"
+        >
+          Senha
+        </NativeBaseText>
+        <ComponentInput 
+          mx="16"
+          my="4"
+          h={8}
+          value={password} onChangeText={
+            (a) => {setPassword(a)}
+          }
+          textAlign="center"
+          secureTextEntry
+        />
+      </VStack>
+      <ComponentButton 
+        title="Login" 
+        mx="1/3" 
+        isLoading={loading} 
+        ftColor={colors.white} 
+        bgColor={colors.blue[500]} 
+        onPress={login}
       />
-      <Text style={styles.textoApp}>Segurança na Mão</Text>
-      <View>
-        <Text style={styles.textoInput}>Usuário</Text>
-        <TextInput style={styles.input} value={name} onChangeText={
-          (e) => {setName(e)}
-        } keyboardType='default'/>
-      </View>
-      <View>
-        <Text style={styles.textoInput}>Senha</Text>
-        <TextInput style={styles.input} value={password} onChangeText={
-          (a) => {setPassword(a)}
-        } secureTextEntry={true}/>
-      </View>
-      <ComponentButton title="Login" m={2} isLoading={loading} ftColor={colors.white} bgColor={colors.blue[500]} onPress={login}/>
-    </View>
+    </VStack>
   )
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#4889BF',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  textoApp: {
-    fontSize: 32,
-    color: '#fff',
-    fontWeight: 'bold',
-    marginBottom: 45
-  },
-  textoInput: {
-    textAlign: 'center',
-    fontWeight: 'bold',
-    color: '#fff',
-    fontSize: 18
-  },
-  input: {
-    width: 200,
-    height: 30,
-    backgroundColor: '#fff',
-    margin: 15,
-    borderRadius: 5,
-    textAlign: 'center'
-  },
-  botaoLogin: {
-    justifyContent: 'center',
-    backgroundColor: '#3B76A7',
-    height: 40,
-    width: 100,
-    borderRadius: 5,
-    marginTop: 20
-  },
-  textBotaoLogin: {
-    textAlign: 'center',
-    color: '#fff'
-  }
-});

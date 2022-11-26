@@ -5,6 +5,7 @@ import { Center, HStack, useTheme, VStack } from "native-base";
 import ComponentButton from "../components/Button";
 import dayjs from "dayjs";
 import { ROUND_COLLECTION } from "../storage/storageConfig";
+import { useNavigation } from "@react-navigation/native";
 
 
 interface IData{
@@ -14,10 +15,12 @@ interface IData{
   stats: string;
 }
 
-export default function RondaListaPonto({navigation}) {
+export default function RondaListaPonto() {
   const [loading, setLoading] = useState(false);
   const [data, setData] = useState<IData[]>([]);
   const {colors} = useTheme();
+
+  const navigation = useNavigation();
 
   const roundsUser = async() => {
     
@@ -32,13 +35,12 @@ export default function RondaListaPonto({navigation}) {
     }
   }
 
-  async function Ponto(id: string){
+  async function Ponto(point_id: string){
     const horario = await AsyncStorage.getItem("horario");
     const horarioAtual = dayjs().format('YYYY-MM-DD HH:mm:ss')
     setLoading(true);
-    //console.log(horario)
     if(horarioAtual >= horario){
-      await navigation.navigate("PontoSelecionado", {id});
+      navigation.navigate("PontoSelecionado", {point_id});
     }else{
       setLoading(false);
     }

@@ -9,7 +9,7 @@ import * as Location from 'expo-location';
 import { roundRemoveById } from "../storage/round/roundRemoveById";
 import Loading from "../components/Loading";
 import ComponentButton from "../components/Button";
-import { Text, useTheme, Button as NativeBase } from "native-base";
+import { Center, Text, useTheme, VStack } from "native-base";
 import { useNavigation } from "@react-navigation/native";
 import * as Network from 'expo-network';
 import { RoundSaveOffiline } from "../storage/round/roundSaveOffline";
@@ -63,7 +63,19 @@ export default function PontoSelecionado(props){
   }
 
   if (hasPermissionBarCode === null) {
-    return <Text style={{flex: 1, alignItems: 'center', justifyContent: 'center'}}>Requesting for camera permission</Text>;
+    return (
+            <VStack bg="#4889BF" flex={1}>
+              <Center>
+                <Text 
+                  color="white" 
+                  fontFamily="heading"
+                >
+                  Esperando a resposta da câmera
+                </Text>
+              </Center>
+              <Loading />
+            </VStack>
+          )
   }
   if (hasPermissionBarCode === false) {
     return Alert.alert('Você não deu permisão para acessar a câmera');

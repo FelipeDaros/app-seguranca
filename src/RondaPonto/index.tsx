@@ -6,33 +6,38 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import CrudService from '../services/crudService';
 import ComponentButton from "../components/Button";
 import { useTheme } from "native-base";
+import { useNavigation } from "@react-navigation/native";
 
-export default function RondaPonto({ navigation }){
+export default function RondaPonto(){
+  const [loading, setLoading] = useState(false);
   const {colors} = useTheme();
   const [location, setLocation] = useState(null);
   const [errorMsg, setErrorMsg] = useState(null);
   const [textoSetor, setTextoSetor] = useState('');
   const crudService = new CrudService();
+  const navigation = useNavigation();
 
   async function localizacao(){
     let location = await Location.getCurrentPositionAsync({});
-      setLocation(location);
-      const company = await AsyncStorage.getItem("company");
-      const {coords} = location
-      console.log(String(coords.longitude))
-      await crudService.save('https://backend-seguranca.herokuapp.com/api/service-point',
-      {
-      latitude: String(coords.latitude),
-      longitude: String(coords.longitude),
-      locale: textoSetor.toUpperCase(),
-      company_id: company
-      }).then(r => {
-        setLocation(null);
-        setTextoSetor('');
-        Alert.alert('Ponto Cadastrado!', 'Você acabou de cadastrar o ponto no setor '+textoSetor);
-      }).catch((err) => {
-        console.log(err)
-      })
+        setLocation(location);
+    setLoading(true)
+    const company = await AsyncStorage.getItem("company");
+    const {coords} = location
+    await crudService.save('https://backend-seguranca.herokuapp.com/api/service-point',
+    {
+    latitude: String(coords.latitude),
+    longitude: String(coords.longitude),
+    locale: textoSetor.toUpperCase(),
+    company_id: company
+    }).then(r => {
+    setLocation(null);
+    setTextoSetor('');
+    navigation.goBack();
+    Alert.alert('Ponto Cadastrado!', 'Você acabou de cadastrar o ponto no setor '+textoSetor);
+    }).catch((err) => {
+      console.log(err)
+      Alert.alert("Ponto", err.response.data.error);
+    }).finally(() => setLoading(false))
   }
 
   return(
@@ -41,7 +46,14 @@ export default function RondaPonto({ navigation }){
       <Text style={styles.textoInformacao}>Para utilizar o cadastro do ponto você terá que ir até o local desejado e apertar para cadastrar, após o cadastro você poderá imprimir o QRCODE gerado para fixar no local do ponto cadastrado.</Text>
       <Text style={styles.textoSetor}>Informe o setor</Text>
       <TextInput style={styles.input} value={textoSetor} onChangeText={e => setTextoSetor(e)}/>
-      <ComponentButton bgColor={colors.green[700]} title="Cadastrar" ftColor={colors.white} onPress={localizacao} m={2}/>
+      <ComponentButton 
+        bgColor={colors.green[700]} 
+        title="Cadastrar" 
+        ftColor={colors.white} 
+        onPress={localizacao} 
+        m={2}
+        isLoading={loading}
+      />
     </View>
   )
 }

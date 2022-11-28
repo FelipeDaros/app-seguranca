@@ -97,11 +97,12 @@ export default function Login({ navigation }){
         <ComponentInput 
           mx="16"
           my="4"
-          h={8}
+          h={10}
           value={name} 
           onChangeText={
             (e) => {setName(e)}
           }
+          fontSize={16}
           textAlign="center"
         />
       </VStack>
@@ -117,7 +118,7 @@ export default function Login({ navigation }){
         <ComponentInput 
           mx="16"
           my="4"
-          h={8}
+          h={10}
           value={password} onChangeText={
             (a) => {setPassword(a)}
           }

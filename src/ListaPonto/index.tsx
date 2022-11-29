@@ -23,19 +23,19 @@ export default function RondaListaPonto() {
   const navigation = useNavigation();
 
   const roundsUser = async() => {
-    
     try {
       const rounds = await AsyncStorage.getItem(ROUND_COLLECTION);
       setData(JSON.parse(rounds));
       setLoading(false);
       //console.log(JSON.parse(rounds));
-
+      return rounds;
     } catch (error) {
       console.log(error.response.data);
     }
   }
 
   async function Ponto(point_id: string){
+    console.log(point_id)
     const horario = await AsyncStorage.getItem("horario");
     const horarioAtual = dayjs().format('YYYY-MM-DD HH:mm:ss')
     setLoading(true);

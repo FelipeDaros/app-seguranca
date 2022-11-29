@@ -13,6 +13,7 @@ import { Center, Text, useTheme, VStack } from "native-base";
 import { useNavigation } from "@react-navigation/native";
 import * as Network from 'expo-network';
 import { RoundSaveOffiline } from "../storage/round/roundSaveOffline";
+import { AppError } from "../error/AppError";
 
 
 export default function PontoSelecionado(props){
@@ -90,17 +91,24 @@ export default function PontoSelecionado(props){
     try {
       await crudService.save('/round', {
         user_id: id,
-        point_id: props.route.params.id,
+        point_id: props.route.params.point_id,
         locale: text,
         data: dayjs().format('YYYY-MM-DD HH:mm:ss'),
         latitude,
         longitude
       }).then(() => {
-        roundRemoveById(props.route.params.id);
+        roundRemoveById(props.route.params.point_id);
         navigation.goBack()
       }).finally(() => setLoading(false))
     } catch (error) {
-      Alert.alert("Não está no local",error.response.data.error);
+
+      if(error instanceof AppError){
+        Alert.alert("Não está no local", error.message);
+      }else{
+        Alert.alert("Ponto selecionado", error.response.data.error)
+      }
+
+      
     }
 
   }

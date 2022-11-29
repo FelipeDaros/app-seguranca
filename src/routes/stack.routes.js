@@ -4,8 +4,8 @@ import RondaPonto from '../RondaPonto/index';
 import HomeAuth from '../HomeAuth/index';
 import Ocorrencia from '../Ocorrencia/index';
 import RondaListaPonto from '../ListaPonto/index';
-import CheckList from '../CheckList/index';
 import PontoSelecionado from "../PontoSelecionado";
+import { CheckList } from "../CheckList";
 
 const { Screen, Navigator } = createNativeStackNavigator();
 

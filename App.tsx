@@ -5,6 +5,7 @@ import { useFonts, Roboto_400Regular, Roboto_700Bold } from "@expo-google-fonts/
 import Loading from "./src/components/Loading";
 import { NativeBaseProvider, StatusBar } from 'native-base';
 import { THEME } from './src/styles/theme';
+import { CheckList } from './src/CheckList';
 export default function App() {
   const [fontsLoaded] = useFonts({Roboto_400Regular, Roboto_700Bold});
   
@@ -28,3 +29,5 @@ const styles = StyleSheet.create({
     justifyContent: 'center'
   }
 });
+
+//

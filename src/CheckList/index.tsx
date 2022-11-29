@@ -16,7 +16,7 @@ type Idata = {
 }
 
 
-export default function Login({ navigation }) {
+export function CheckList({ navigation }) {
   const {colors} = useTheme();
   const [loading, setLoading] = useState(false);
   const [checkBoxLeitura, setcheckBoxLeitura] = useState<boolean>(false);
@@ -72,7 +72,7 @@ export default function Login({ navigation }) {
             const post = await AsyncStorage.getItem("post")
             var nameItens = [];
             setLoading(true);
-            checkIten.map(e => nameItens.push(e.name));
+            checkIten.map(e => nameItens.push(e.itens));
             await crudService.save("/service-day", {
               user_id: id,
               itens: nameItens,
@@ -98,7 +98,7 @@ export default function Login({ navigation }) {
       const post = await AsyncStorage.getItem("post")
       var nameItens = [];
       setLoading(true);
-      checkIten.map(e => nameItens.push(e.name));
+      checkIten.map(e => nameItens.push(e.itens));
       await crudService.save("/service-day", {
         user_id: id,
         itens: nameItens,
@@ -138,6 +138,7 @@ export default function Login({ navigation }) {
   const handleListTap = (item) => {
     let itenId = [...checkIten];   // add this
     const index = itenId.indexOf(item);
+    console.log(checkIten)
      if (index > -1) {
       itenId.splice(index, 1);    // add this
      } else {

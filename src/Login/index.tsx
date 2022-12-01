@@ -2,16 +2,18 @@ import { StyleSheet, Alert, Image } from "react-native";
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import React, {useState, useEffect} from "react";
 import CrudService from "../services/crudService";
-import eskimoIcone from '../../assets/logo.png'
+import logo from '../../assets/logo.png'
 import dayjs from "dayjs";
 import * as Location from 'expo-location';
 import ComponentButton from "../components/Button";
 import { 
   useTheme, 
   Text as NativeBaseText, 
-  VStack, Input as NativeBaseInput, Center 
+  VStack, Input as NativeBaseInput, Center, Heading 
 } from "native-base";
 import { ComponentInput } from "../components/Input";
+
+const SIZE = 160;
 
 
 export default function Login({ navigation }){
@@ -66,31 +68,33 @@ export default function Login({ navigation }){
 
   return (
     <VStack  
-      backgroundColor="#4889BF" 
+      backgroundColor="gray.500" 
       flex={1}
       justifyContent="center"
     >
-      <Center>
+      <Center mb="1/6">
         <Image 
-          source={eskimoIcone}
-          style={{width: 220, height: 119, marginBottom: 15}}
+          source={logo}
+          style={{width: SIZE, height: SIZE}}
         />
       </Center>
-      <NativeBaseText 
+      <Heading 
           color="white" 
           fontFamily="heading"
           textAlign="center"
+          fontWeight="bold"
           fontSize="3xl"
           mb="10"
         >
           Segurança na mão
-      </NativeBaseText>
+      </Heading>
       <VStack>
         <NativeBaseText 
           color="white" 
           fontFamily="heading"
           textAlign="center"
           fontSize="lg"
+          fontWeight="bold"
         >
           Usuário
         </NativeBaseText>
@@ -112,6 +116,7 @@ export default function Login({ navigation }){
           fontFamily="heading"
           textAlign="center"
           fontSize="lg"
+          fontWeight="bold"
         >
           Senha
         </NativeBaseText>
@@ -127,11 +132,12 @@ export default function Login({ navigation }){
         />
       </VStack>
       <ComponentButton 
-        title="Login" 
+        title="Entrar" 
         mx="1/3" 
+        fontWeight="bold"
         isLoading={loading} 
-        ftColor={colors.white} 
-        bgColor={colors.blue[500]} 
+        color="white" 
+        bgColor="gray.600"
         onPress={login}
       />
     </VStack>

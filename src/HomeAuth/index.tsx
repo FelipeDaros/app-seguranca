@@ -1,18 +1,11 @@
 import { Alert, Vibration, Text, View, StyleSheet, ScrollView, Image, TouchableOpacity, FlatList, Button } from "react-native";
 import React, {useState, useEffect} from "react";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import alert from '../../assets/alert.png';
-import point from '../../assets/point.png';
-import round from '../../assets/round.png';
-import registerPoint from '../../assets/registerPoint.png';
-import regiserOccurence from '../../assets/regiserOccurence.png';
-import panic from '../../assets/panic.png';
 import CrudService from "../services/crudService";
 import dayjs from "dayjs";
 import ComponentButton from "../components/Button";
 import { useTheme } from "native-base";
 import Loading from "../components/Loading";
-import { ROUND_COLLECTION } from "../storage/storageConfig";
 import { createRounds } from "../services/createRounds";
 
 type Panic = {
@@ -135,33 +128,33 @@ export default function HomeAuth({navigation}){
         </TouchableOpacity> 
         : 
         <TouchableOpacity style={styles.card} onPress={ativarAlerta}>
-          <Image source={alert} style={styles.imgCard}/>
+          
           <View>
             <Text style={{fontSize:12, color: '#fff'}}>Próximo HORA: {proximoAlerta}</Text>
           </View>
         </TouchableOpacity>}
         <TouchableOpacity onPress={rondaListaPonto} style={styles.card}>
-        <Image source={round} style={styles.imgCard}/>
+        
           <Text style={styles.textTitleCard}>RONDA</Text>
         </TouchableOpacity>
         <TouchableOpacity onPress={ativarPanico} style={styles.card}>
-        <Image source={panic} style={styles.imgCard}/>
+        
           <Text style={styles.textTitleCard}>BOTÃO PÂNICO</Text>
         </TouchableOpacity>
         <TouchableOpacity onPress={ocorrencia} style={styles.card}>
-        <Image source={regiserOccurence} style={styles.imgCard}/>
+        
           <Text style={styles.textTitleCard}>REGISTRO DE OCORRÊNCIA</Text>
         </TouchableOpacity>
         <TouchableOpacity style={styles.card}>
-        <Image source={point} style={styles.imgCard}/>
+        
           <Text style={styles.textTitleCard}>MANDAR LOCALIZAÇÃO</Text>
         </TouchableOpacity>
         <TouchableOpacity onPress={rondaPonto} style={styles.card}>
-        <Image source={registerPoint} style={styles.imgCard}/>
+        
           <Text style={styles.textTitleCard}>CADASTRO PONTO</Text>
         </TouchableOpacity>
       </ScrollView>
-      <ComponentButton onPress={sair} m={4} title="SAIR" bgColor={colors.red[500]} ftColor={colors.white}/>
+      <ComponentButton onPress={sair} m={4} title="SAIR" bgColor={colors.red[500]} />
     </View>
   )
 }

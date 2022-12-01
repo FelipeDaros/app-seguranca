@@ -1,11 +1,13 @@
-import { View, StyleSheet, Text, Button, FlatList, TouchableOpacity, Alert, ScrollView  } from "react-native";
+import { View, StyleSheet, Text, FlatList, Alert } from "react-native";
 import React, { useEffect, useState } from "react";
 import Checkbox from 'expo-checkbox';
 import CrudService from "../services/crudService";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import dayjs from "dayjs";
-import { useTheme, Text as TextNativeBase } from "native-base";
+import { useTheme, Text as TextNativeBase, HStack, VStack, Box, Center } from "native-base";
 import ComponentButton from "../components/Button";
+import { Header } from "../components/Header";
+import api from "../api/api";
 
 type Idata = {
   user_id: string;
@@ -24,29 +26,14 @@ export function CheckList({ navigation }) {
   const [dados, setDados] = useState<Idata[]>([]);
   const [itensAnterior, setItensAnterior] = useState();
   const [itens, setItens] = useState([]);
+  const [oldItems, SetOldItems] = useState([]);
   const [post, setPost] = useState('');
   const crudService = new CrudService();
-
-  useEffect(() => {
-    searchLatestCheckList();
-    itensAPI();
-  }, [])
 
   async function searchLatestCheckList(){
     try {
       const response = await crudService.findAll('/service-day');
       setDados(response.data);
-    } catch (error) {
-      console.log(error.response.data);
-    }
-  }
-
-  async function listarItensAntigo(){
-    try {
-      const r = await crudService.findLatestItensPost('/service-day/latest');
-      const latest = r.data
-      setItensAnterior(latest);
-      console.log(itensAnterior)
     } catch (error) {
       console.log(error.response.data);
     }
@@ -116,7 +103,7 @@ export function CheckList({ navigation }) {
   }
 
   const listAllItens = ({item, index}) => (
-    <View style={styles.checkList}>
+    <HStack alignItems="center" mt="4">
       <Checkbox
         value={checkIten.find(iten => iten.itensId === item.itensId ? true : false)}
         key={item.itensId}
@@ -125,9 +112,10 @@ export function CheckList({ navigation }) {
           handleListTap(item)
         }}
       />
-      <Text style={styles.textoCheckBox}>{item.itens}</Text>
-    </View>
+      <TextNativeBase style={styles.textoCheckBox}>{item.itens}</TextNativeBase>
+    </HStack>
   )
+  
 
   const listarItensAnterior = ({index, item}) => (
     <View>
@@ -147,40 +135,76 @@ export function CheckList({ navigation }) {
     setCheckIten(itenId);
   };
 
+  async function listarItensAntigos() {
+    try {
+      const data = await api.get("https://backend-seguranca.herokuapp.com/api/service-day/latest", {
+        start_date: "2022-12-01 00:00:00.000",
+        end_date: "2022-12-01 23:59:00.000",
+        post_id: "28be34f6-6fe4-11ed-a1eb-0242ac120002"
+      });
+      console.log(data);
+    } catch (error) {
+      console.log(error.response.data);
+    }
+  }
+
+  useEffect(() => {
+    searchLatestCheckList();
+    itensAPI();
+    listarItensAntigos();
+  }, [])
+
   return (
-    <View style={styles.container}>
-      <View style={styles.containerSuperior}>
-        <Text style={styles.textoRelatorio}>INFORMAÇÕES DO RELATÓRIO ANTERIOR</Text>
-        <FlatList
-          data={itensAnterior}
-          renderItem={listarItensAnterior}
-        />
-        <Text>{dados.created_at}</Text>
-        {dados.report_reading === 1 ? <Text>FOI CONFIRMADO A LEITURA DO RELATÓRIO</Text> : 
-        <Text>NÃO FOI CONFIRMADO A LEITURA DO RELATÓRIO</Text>}
-        <Button title="Atualizar" onPress={listarItensAntigo}/>
-      </View>
+    <VStack style={styles.container} bg="gray.400">
+      <Header />
+      <TextNativeBase color={colors.white} fontSize="md" m={2}>Relatório anterior</TextNativeBase>
+        <VStack
+          bg="gray.300"
+          minH="32"
+          maxH="32"
+          maxW="1/2"
+          minW="1/2"
+          rounded="md"
+        >
+
+        </VStack>
        <View style={styles.checkListContainer}>
-        <TextNativeBase color={colors.white} fontSize="md" m={2}>CHECK LIST DOS EQUIPAMENTOS</TextNativeBase>
+        <TextNativeBase color={colors.white} fontSize="md" m={2}>Check List dos equipamentos</TextNativeBase>
           
-        <FlatList 
+        <Center
+          bg="gray.300"
+          minH="32"
+          maxH="32"
+          maxW="1/2"
+          minW="1/2"
+          rounded="md"
+          alignSelf="center"
+        >
+          <FlatList 
             data={itens}
             renderItem={listAllItens}
+            contentContainerStyle={{paddingBottom: 15}}
           />
+        </Center>
        </View>
        <TextNativeBase color={colors.white} fontSize="md" m={2}>Confirmar leitura do relatório anterior</TextNativeBase>
        <Checkbox 
         value={checkBoxLeitura}
         onValueChange={setcheckBoxLeitura}
        />
-       <ComponentButton title="Proseguir" m={4} ftColor={colors.white} bgColor={colors.green[700]} isLoading={loading} onPress={startDayService}/>
-    </View>
+       <ComponentButton 
+        title="Confirmar" 
+        m={4} 
+        bg="gray.600" 
+        isLoading={loading} 
+        onPress={startDayService}
+       />
+    </VStack>
   )
 }
 
 const styles = StyleSheet.create({
   container: {
-    backgroundColor: '#4889BF',
     alignItems: 'center',
     flex: 1
   },

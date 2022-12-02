@@ -4,9 +4,11 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import CrudService from "../services/crudService";
 import dayjs from "dayjs";
 import ComponentButton from "../components/Button";
-import { useTheme } from "native-base";
+import { useTheme, VStack } from "native-base";
 import Loading from "../components/Loading";
 import { createRounds } from "../services/createRounds";
+import { Header } from "../components/Header";
+import { Card } from "../components/Card";
 
 type Panic = {
   user_id: string,
@@ -119,85 +121,13 @@ export default function HomeAuth({navigation}){
   }, [proximoAlerta, alertData]);
 
   return(
-    <View style={styles.container}>
-      
-      <ScrollView showsVerticalScrollIndicator={false} style={{marginTop: 50}}>
-        {loading ? 
-        <TouchableOpacity style={styles.card}>
-          <Loading />
-        </TouchableOpacity> 
-        : 
-        <TouchableOpacity style={styles.card} onPress={ativarAlerta}>
-          
-          <View>
-            <Text style={{fontSize:12, color: '#fff'}}>Próximo HORA: {proximoAlerta}</Text>
-          </View>
-        </TouchableOpacity>}
-        <TouchableOpacity onPress={rondaListaPonto} style={styles.card}>
+    <VStack bg="gray.500" flex={1}>
+      <Header />
+      <Card 
         
-          <Text style={styles.textTitleCard}>RONDA</Text>
-        </TouchableOpacity>
-        <TouchableOpacity onPress={ativarPanico} style={styles.card}>
-        
-          <Text style={styles.textTitleCard}>BOTÃO PÂNICO</Text>
-        </TouchableOpacity>
-        <TouchableOpacity onPress={ocorrencia} style={styles.card}>
-        
-          <Text style={styles.textTitleCard}>REGISTRO DE OCORRÊNCIA</Text>
-        </TouchableOpacity>
-        <TouchableOpacity style={styles.card}>
-        
-          <Text style={styles.textTitleCard}>MANDAR LOCALIZAÇÃO</Text>
-        </TouchableOpacity>
-        <TouchableOpacity onPress={rondaPonto} style={styles.card}>
-        
-          <Text style={styles.textTitleCard}>CADASTRO PONTO</Text>
-        </TouchableOpacity>
-      </ScrollView>
-      <ComponentButton onPress={sair} m={4} title="SAIR" bgColor={colors.red[500]} />
-    </View>
+      />
+    </VStack>
   )
 }
 
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#4889BF',
-    justifyContent: 'center',
-    alignItems: 'center'
-  },
-  card: {
-    height: 70,
-    width: 300,
-    backgroundColor: 'rgba(255, 255, 255, 0.08)',
-    borderRadius: 5,
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    flexDirection: 'row',
-    margin: 10,
-    padding: 20
-  },
-  imgCard: {
-    height: 45, 
-    width: 45
-  },
-  textTitleCard: {
-    fontSize: 16,
-    color: '#fff',
-    fontWeight: 'bold'
-  },
-  buttonExit:{
-    height: 25,
-    width: 100,
-    margin: 20,
-    backgroundColor: '#000',
-    justifyContent: 'center',
-    alignItems: 'center'
-  },
-  textExit: {
-    fontSize: 20,
-    color: '#fff'
-  }
-});
 

@@ -1,14 +1,14 @@
-import { Alert, Vibration, Text, View, StyleSheet, ScrollView, Image, TouchableOpacity, FlatList, Button } from "react-native";
+import { Alert, Vibration, Image} from "react-native";
 import React, {useState, useEffect} from "react";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import CrudService from "../services/crudService";
+import * as Location from 'expo-location';
 import dayjs from "dayjs";
-import ComponentButton from "../components/Button";
-import { useTheme, VStack } from "native-base";
-import Loading from "../components/Loading";
+import { ScrollView, useTheme, VStack } from "native-base";
 import { createRounds } from "../services/createRounds";
 import { Header } from "../components/Header";
 import { Card } from "../components/Card";
+import { ControlledPropUpdatedSelectedItem } from "native-base/lib/typescript/components/composites/Typeahead/useTypeahead/types";
 
 type Panic = {
   user_id: string,
@@ -18,6 +18,8 @@ type Panic = {
 
 export default function HomeAuth({navigation}){
   const [loading, setLoading] = useState(false);
+  const [location, setLocation] = useState(null);
+  const [errorMsg, setErrorMsg] = useState(null);
   const { colors } = useTheme();
   const ONE_SECOND_IN_MS = 500;
   const crudService = new CrudService();
@@ -64,6 +66,17 @@ export default function HomeAuth({navigation}){
       await AsyncStorage.setItem("horario", horarioAtual);
       return Alert.alert("ALERTA", "Você já pode ir fazer a ronda!");
     }
+  }
+
+  async function localizacao() {
+    let { status } = await Location.requestForegroundPermissionsAsync();
+      if (status !== 'granted') {
+        setErrorMsg('Permission to access location was denied');
+        return;
+      }
+
+      let location = await Location.getCurrentPositionAsync({});
+      setLocation(location);
   }
 
   async function ativarPanico(){
@@ -123,9 +136,43 @@ export default function HomeAuth({navigation}){
   return(
     <VStack bg="gray.500" flex={1}>
       <Header />
-      <Card 
-        
-      />
+      <ScrollView>
+        <Card
+          title="ALERTA VIGIA" 
+          iconName="bell-ring"
+          titleCenter={proximoAlerta}
+          textDown="APERTE PARA EFETUAR O ALERTA"
+          onPress={ativarAlerta}
+        />
+        <Card
+          title="RONDA" 
+          iconName="run"
+          titleCenter="Entre para efetuar sua ronda!"
+          textDown="APERTE PARA EFETUAR A RONDA"
+          onPress={rondaListaPonto}
+        />
+        <Card
+          title="PÂNICO" 
+          iconName="alarm-light"
+          titleCenter="Aperte para emetir o pânico"
+          textDown="APERTE PARA EFETUAR EMITIR O PÂNICO"
+          onPress={ativarPanico}
+        />
+        <Card
+          title="LOCALIZAÇÃO" 
+          iconName="map-marker-distance"
+          titleCenter="Mande sua localização"
+          textDown="APERTE PARA ENVIAR LOCALIZAÇÃO"
+          onPress={localizacao}
+        />
+        <Card
+          title="PONTO" 
+          iconName="map-marker-check"
+          titleCenter="Cadastrar um ponto"
+          textDown="APERTE PARA CADASTRAR O PONTO"
+          onPress={rondaPonto}
+        />
+      </ScrollView>
     </VStack>
   )
 }

@@ -7,10 +7,10 @@ const SIZE = 80
 
 export function Header(){
 
-  //const navigate = useNavigation();
+  const navigate = useNavigation();
 
   function handleGoBack(){
-    //navigate.goBack()
+    navigate.goBack()
   }  
   return(
     <HStack 

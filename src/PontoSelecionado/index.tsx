@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { StyleSheet,View, Button, Alert, TouchableOpacity } from "react-native";
+import { StyleSheet, Alert, TouchableOpacity } from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import CrudService from "../services/crudService";
 import { BarCodeScanner } from 'expo-barcode-scanner';
@@ -14,6 +14,7 @@ import { useNavigation } from "@react-navigation/native";
 import * as Network from 'expo-network';
 import { RoundSaveOffiline } from "../storage/round/roundSaveOffline";
 import { AppError } from "../error/AppError";
+import { Header } from "../components/Header";
 
 
 export default function PontoSelecionado(props){
@@ -122,42 +123,51 @@ export default function PontoSelecionado(props){
   };
  
   return(
-    <View style={styles.container}>
+    <VStack flex={1} bg="gray.500">
+      <Header />
       {isActive && (
-        <BarCodeScanner
-          onBarCodeScanned={handleBarCodeScanned}
-          style={styles.QRCODE}
-          barCodeTypes={[BarCodeScanner.Constants.BarCodeType.qr]}
-          type={BarCodeScanner.Constants.Type.back}
-        />
+        <Center>
+          <BarCodeScanner
+            onBarCodeScanned={handleBarCodeScanned}
+            style={styles.QRCODE}
+            barCodeTypes={[BarCodeScanner.Constants.BarCodeType.qr]}
+            type={BarCodeScanner.Constants.Type.back}
+          />
+        </Center>
       )}
       {isActive == true ? 
-        <TouchableOpacity onPress={() => setIsActive(false)} style={styles.button}>
-          <Text style={{color: '#fff'}}>Fechar</Text>
-        </TouchableOpacity> 
+        <Center>
+          <TouchableOpacity onPress={() => setIsActive(false)} style={styles.button}>
+            <Text color="white">Fechar</Text>
+          </TouchableOpacity> 
+        </Center>
         : 
-        <ComponentButton 
-          title="Scanner"
-          color={colors.white}
-          onPress={() => setIsActive(true)}
-          m={2}
-          isLoading={loadingScan}
-          bgColor={colors.blue[700]}
-          ftColor={colors.white}
-        />
+        <Center>
+          <ComponentButton 
+            title="Scanner"
+            color={colors.white}
+            onPress={() => setIsActive(true)}
+            m={2}
+            w="1/2"
+            isLoading={loadingScan}
+            bgColor={colors.blue[700]}
+          />
+        </Center>
         }
         {text != '' || null || undefined ? 
-        <ComponentButton 
-          isLoading={loading} 
-          bgColor={colors.green[700]} 
-          title="Enviar" 
-          ftColor="white" 
-          onPress={enviarQRCODE} 
-          m={2}
-        />
+        <Center>
+          <ComponentButton 
+            isLoading={loading} 
+            bgColor={colors.green[700]} 
+            title="Enviar"
+            w="1/2"
+            onPress={enviarQRCODE} 
+            m={2}
+          />
+        </Center>
         : <></>  
         }
-    </View>
+    </VStack>
   )
 }
 

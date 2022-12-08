@@ -1,12 +1,13 @@
-import { Alert, StyleSheet, Text, TextInput, TouchableOpacity, View } from "react-native";
+import { Alert, StyleSheet, TextInput } from "react-native";
 import React, { useState, useEffect } from 'react';
 import * as Location from 'expo-location';
 import axios from 'axios';
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import CrudService from '../services/crudService';
 import ComponentButton from "../components/Button";
-import { useTheme } from "native-base";
+import { Center, useTheme, Text, VStack } from "native-base";
 import { useNavigation } from "@react-navigation/native";
+import { Header } from "../components/Header";
 
 export default function RondaPonto(){
   const [loading, setLoading] = useState(false);
@@ -41,20 +42,25 @@ export default function RondaPonto(){
   }
 
   return(
-    <View style={styles.container}>
-      <Text style={styles.textoPonto}>Cadastro Ponto</Text>
-      <Text style={styles.textoInformacao}>Para utilizar o cadastro do ponto você terá que ir até o local desejado e apertar para cadastrar, após o cadastro você poderá imprimir o QRCODE gerado para fixar no local do ponto cadastrado.</Text>
-      <Text style={styles.textoSetor}>Informe o setor</Text>
-      <TextInput style={styles.input} value={textoSetor} onChangeText={e => setTextoSetor(e)}/>
-      <ComponentButton 
-        bgColor={colors.green[700]} 
-        title="Cadastrar" 
-        ftColor={colors.white} 
-        onPress={localizacao} 
-        m={2}
-        isLoading={loading}
-      />
-    </View>
+    <VStack flex={1} bg="gray.500">
+      <Header />
+      <Center mt="1/3">
+        <Text fontFamily="heading" color="white">Cadastro Ponto</Text>
+        <Text fontFamily="body" color="white" px="12" textAlign="center">Para utilizar o cadastro do ponto você terá que ir até o local desejado e apertar para cadastrar, após o cadastro você poderá imprimir o QRCODE gerado para fixar no local do ponto cadastrado.</Text>
+        <Text color="white" fontFamily="heading" mt="6">Informe o setor</Text>
+        <TextInput style={styles.input} value={textoSetor} onChangeText={e => setTextoSetor(e)}/>
+      </Center>
+      <Center>
+        <ComponentButton 
+          bgColor={colors.green[700]} 
+          title="Cadastrar"
+          onPress={localizacao} 
+          m={2}
+          w="1/2"
+          isLoading={loading}
+        />
+      </Center>
+    </VStack>
   )
 }
 

@@ -1,11 +1,12 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useEffect, useState } from "react";
-import { View, Text, StyleSheet, FlatList } from "react-native";
-import { Center, HStack, useTheme, VStack } from "native-base";
-import ComponentButton from "../components/Button";
+import { FlatList } from "react-native";
+import { Center, HStack, Icon, Pressable, Text, useTheme, VStack } from "native-base";
 import dayjs from "dayjs";
 import { ROUND_COLLECTION } from "../storage/storageConfig";
 import { useNavigation } from "@react-navigation/native";
+import { Header } from "../components/Header";
+import { MaterialCommunityIcons } from '@expo/vector-icons';
 
 
 interface IData{
@@ -47,23 +48,35 @@ export default function RondaListaPonto() {
   }
 
   const renderItem = ({ item }) => (
-    <View style={styles.card}>
-      <HStack>
-        <VStack justifyContent="center" flex={1}>
-          <Text style={styles.itemTexto}>Local</Text>
-          <Text style={styles.itemTexto}>{item.locale}</Text>
-        </VStack>
-        <ComponentButton 
-          bgColor={colors.lightBlue[500]} 
-          isLoading={loading} 
-          ftColor="white" 
-          m={4} 
-          title="Validar" 
-          onPress={() => {Ponto(item.id)}} 
-          key={item.id}
-        />
-      </HStack>
-    </View>
+      <Center>
+        <Pressable 
+        bg="gray.300" 
+        mb="8" 
+        w="2/3" 
+        borderRadius="md" 
+        p="4"
+        _pressed={{style: {
+          backgroundColor: colors.gray[200],
+          borderColor: colors.gray[300]
+        }}}
+        onPress={() => {Ponto(item.id)}} 
+        >
+          <VStack>
+              <HStack justifyContent="space-around">
+                <Icon 
+                  as={MaterialCommunityIcons}
+                  name="qrcode-scan"
+                  color="gray.400"
+                  size={16}
+                />
+              <VStack>
+                <Text color="gray.400" fontSize="md">{item.name}</Text>
+                <Text color="gray.400" fontSize="md">{item.locale}</Text>
+              </VStack>
+            </HStack>
+          </VStack>
+        </Pressable>
+      </Center>
   );
 
   useEffect(() => {
@@ -71,8 +84,8 @@ export default function RondaListaPonto() {
   },[loading, data]);
 
   return (
-    <View style={styles.container}>
-      <Text style={styles.textoTitulo}>Lista os pontos para efetuar as rotas</Text>
+    <VStack bg="gray.500" flex={1}>
+      <Header />
         <FlatList 
           data={data}
           renderItem={renderItem}
@@ -80,85 +93,9 @@ export default function RondaListaPonto() {
           style={{height: 250}}
           showsVerticalScrollIndicator={false}
         />
-    </View>
+    </VStack>
   )
 }
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    marginTop: 0,
-    backgroundColor: '#4889BF',
-    justifyContent: 'center',
-    alignItems: 'center'
-  },
-  textoTitulo:{
-    fontSize: 20, 
-    color: '#CEE0EF', 
-    fontWeight: 'bold', 
-    margin: 30,
-    marginTop: 60
-  },
-  viewFlatList: {
-    height: 400
-  },
-  card:{
-    backgroundColor: 'rgba(255, 255, 255, 0.2)',
-    width: 300,
-    height: 80,
-    borderRadius: 5,
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    margin: 20
-  },
-  viewCard: {
-    flexDirection: 'row', 
-    alignItems: 'center',
-  },
-  itemTexto: {
-    margin: 5,
-    color: '#CEE0EF',
-    fontSize: 14,
-    fontWeight: 'bold',
-    textAlign: 'center'
-  },
-  botaoAtualizar: {
-    width: 100,
-    height: 60,
-    backgroundColor: 'rgba(255, 255, 255, 0.2)',
-    alignItems: 'center',
-    borderRadius: 5
-  },
-  textoAtualizar: {
-    fontSize: 18,
-    color: '#CEE0EF',
-    fontWeight: 'bold'
-  },
-  icone: {
-    width: 60,
-    height: 40
-  },
-  iconeStats: {
-    width: 35,
-    height: 35,
-    margin: 5
-  },
-  buttonValidarAtivo: {
-    width: 60,
-    height: 40,
-    backgroundColor: 'green',
-    alignItems: 'center',
-    justifyContent: 'center',
-    borderRadius: 5,
-    marginLeft: 10
-  },
-  buttonValidarDesativado: {
-    width: 60,
-    height: 40,
-    backgroundColor: '#a62519',
-    alignItems: 'center',
-    justifyContent: 'center',
-    borderRadius: 5,
-    marginLeft: 10
-  }
-});
+
+//

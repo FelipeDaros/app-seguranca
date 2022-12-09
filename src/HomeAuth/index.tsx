@@ -70,27 +70,24 @@ export default function HomeAuth({navigation}){
 
   async function localizacao() {
     let { status } = await Location.requestForegroundPermissionsAsync();
-      if (status !== 'granted') {
-        setErrorMsg('Permission to access location was denied');
-        return;
-      }
+    if (status !== 'granted') {
+      setErrorMsg('Permission to access location was denied');
+      return;
+    }
 
-      let location = await Location.getCurrentPositionAsync({});
-      setLocation(location);
+    let location = await Location.getCurrentPositionAsync({});
+    setLocation(location);
+    console.log(location)
   }
 
   async function ativarPanico(){
     const id = await AsyncStorage.getItem("id");
-
-    const data: Panic = {
-      user_id: id,
-      stats: 1,
-      date: dayjs().format('YYYY-MM-DD HH:mm:ss')
-    }
     
     try {
       crudService.save('/panic',{
-        data
+        user_id: id,
+        stats: 1,
+        date: dayjs().format('YYYY-MM-DD HH:mm:ss')
       }).then(() => {
         Alert.alert('Você ativou o botão do PÂNICO!', 'ALERTA PÂNICO');
         Vibration.vibrate(1*ONE_SECOND_IN_MS);
@@ -164,6 +161,13 @@ export default function HomeAuth({navigation}){
           titleCenter="Mande sua localização"
           textDown="APERTE PARA ENVIAR LOCALIZAÇÃO"
           onPress={localizacao}
+        />
+        <Card
+          title="REGISTRO OCORRÊNCIA" 
+          iconName="file-document-edit"
+          titleCenter="Registe a ocorrência"
+          textDown="APERTE PARA REGISTRAR OC"
+          onPress={ocorrencia}
         />
         <Card
           title="PONTO" 

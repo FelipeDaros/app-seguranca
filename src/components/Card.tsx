@@ -41,7 +41,7 @@ export function Card({iconName, title, titleCenter, textDown, ...rest}: Props){
               <Text color="white" mb="4">
                 {title}
               </Text>
-              {titleCenter ? <Text color="white" fontSize="xs" textAlign="center">Proxímo alerta {"\n"} {titleCenter}</Text> : <></>}
+              {titleCenter ? <Text color="white" fontSize="xs" textAlign="center">{titleCenter}</Text> : <></>}
             </VStack>
           </HStack>
           <Text

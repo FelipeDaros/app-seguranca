@@ -20,7 +20,7 @@ export default function RondaPonto(){
 
   async function localizacao(){
     let location = await Location.getCurrentPositionAsync({});
-        setLocation(location);
+    setLocation(location);
     setLoading(true)
     const company = await AsyncStorage.getItem("company");
     const {coords} = location
@@ -54,9 +54,9 @@ export default function RondaPonto(){
         <ComponentButton 
           bgColor={colors.green[700]} 
           title="Cadastrar"
-          onPress={localizacao} 
           m={2}
           w="1/2"
+          onPress={localizacao}
           isLoading={loading}
         />
       </Center>

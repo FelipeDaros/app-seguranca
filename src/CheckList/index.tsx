@@ -44,7 +44,7 @@ export function CheckList({ navigation }) {
       const response = await crudService.findAllItensPost('post/itens');
       setItens(response.data);
     } catch (error) {
-      //console.log(error.response.data);
+      console.log(error.response.data);
       setItens(error.response.data);
     }
   }
@@ -137,14 +137,15 @@ export function CheckList({ navigation }) {
 
   async function listarItensAntigos() {
     try {
-      const data = await api.get("http://192.168.10.145:3000/api/service-day/latest", {
-        start_date: "2022-12-01 00:00:00.000",
-        end_date: "2022-12-01 23:59:00.000",
-        post_id: "28be34f6-6fe4-11ed-a1eb-0242ac120002"
+      const data = await api.get("/service-day/latest", {
+        start_date: "2022-12-13 00:00:00.000",  
+        end_date: "2022-12-13 23:59:00.000",
+        post_id: "d64742ff-248b-4111-8eb3-5d2b2897abba"
       });
-      console.log(data);
+      console.log(data.data);
     } catch (error) {
-      console.log(error.response.data);
+
+      //console.log(error.response.data);
     }
   }
 

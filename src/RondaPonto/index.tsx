@@ -19,12 +19,11 @@ export default function RondaPonto(){
   const navigation = useNavigation();
 
   async function localizacao(){
-    let location = await Location.getCurrentPositionAsync({});
+    let {coords} = await Location.getCurrentPositionAsync();
     setLocation(location);
     setLoading(true)
     const company = await AsyncStorage.getItem("company");
-    const {coords} = location
-    await crudService.save('https://backend-seguranca.herokuapp.com/api/service-point',
+    await crudService.save('/service-point',
     {
     latitude: String(coords.latitude),
     longitude: String(coords.longitude),

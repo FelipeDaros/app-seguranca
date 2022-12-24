@@ -12,6 +12,8 @@ import {
   VStack, Input as NativeBaseInput, Center, Heading 
 } from "native-base";
 import { ComponentInput } from "../components/Input";
+import api from "../api/api";
+import { useNavigation } from "@react-navigation/native";
 
 const SIZE = 160;
 
@@ -24,6 +26,7 @@ export default function Login({ navigation }){
   const crudService = new CrudService();
   const [location, setLocation] = useState(null);
   const [errorMsg, setErrorMsg] = useState(null);
+  const navigate = useNavigation();
 
   useEffect(() => {
     (async () => {
@@ -40,23 +43,17 @@ export default function Login({ navigation }){
 
   async function login(){
     setLoading(true);
-    const data = await crudService.save('/users/signin',
+    const data = await api.post('/auth',
         {
           name,
           password
         }
-      ).then(async (r) => {
-        const {id, name, jwtToken, company, post} = r.data;
-        await AsyncStorage.setItem("token", jwtToken);
-        await AsyncStorage.setItem("id", id);
-        await AsyncStorage.setItem("name", name);
-        await AsyncStorage.setItem("company", String(company.id))
-        post == ('' || null || undefined) ? '' : await AsyncStorage.setItem("post", post.id);
-        var starDate = dayjs().format('YYYY-MM-DD HH:mm:ss');
-        if(jwtToken){
-          await AsyncStorage.setItem("startDate", starDate);
-          await navigation.navigate("CheckList");
-        }
+      ).then(async (response) => {
+        const {token, id, post_id} = response.data;
+        await AsyncStorage.setItem("token", token);
+        await AsyncStorage.setItem("user_id", id);
+        await AsyncStorage.setItem("post_id", post_id);
+        navigate.navigate("CheckList");
       }).catch(async (e) => {
         await navigation.navigate("Login");
         setLoading(false)

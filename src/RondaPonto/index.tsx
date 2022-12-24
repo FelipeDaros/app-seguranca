@@ -8,6 +8,7 @@ import ComponentButton from "../components/Button";
 import { Center, useTheme, Text, VStack } from "native-base";
 import { useNavigation } from "@react-navigation/native";
 import { Header } from "../components/Header";
+import api from "../api/api";
 
 export default function RondaPonto(){
   const [loading, setLoading] = useState(false);
@@ -21,13 +22,12 @@ export default function RondaPonto(){
   async function localizacao(){
     let {coords} = await Location.getCurrentPositionAsync();
     setLocation(location);
-    setLoading(true)
-    const company = await AsyncStorage.getItem("company");
-    await crudService.save('/service-point',
-    {
+    setLoading(true);
+    
+    await api.post('/point',{
     latitude: String(coords.latitude),
     longitude: String(coords.longitude),
-    locale: textoSetor.toUpperCase(),
+    name: textoSetor
     company_id: company
     }).then(r => {
     setLocation(null);

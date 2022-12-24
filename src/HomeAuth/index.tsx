@@ -8,13 +8,7 @@ import { ScrollView, useTheme, VStack } from "native-base";
 import { createRounds } from "../services/createRounds";
 import { Header } from "../components/Header";
 import { Card } from "../components/Card";
-import { ControlledPropUpdatedSelectedItem } from "native-base/lib/typescript/components/composites/Typeahead/useTypeahead/types";
-
-type Panic = {
-  user_id: string,
-  stats: number,
-  date: string
-}
+import api from "../api/api";
 
 export default function HomeAuth({navigation}){
   const [loading, setLoading] = useState(false);
@@ -52,7 +46,7 @@ export default function HomeAuth({navigation}){
     }else{
       try {
         createRounds();
-        await crudService.save('time-alert', {
+        await api.post('time-alert', {
           user_id,
           company_id,
           latestAlert: horarioAtual,

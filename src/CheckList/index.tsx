@@ -1,21 +1,12 @@
 import { View, StyleSheet, Text, FlatList, Alert } from "react-native";
 import React, { useEffect, useState } from "react";
 import Checkbox from 'expo-checkbox';
-import CrudService from "../services/crudService";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import dayjs from "dayjs";
-import { useTheme, Text as TextNativeBase, HStack, VStack, Box, Center } from "native-base";
+import { useTheme, Text as TextNativeBase, HStack, VStack, Box, Center, useToast } from "native-base";
 import ComponentButton from "../components/Button";
 import { Header } from "../components/Header";
 import api from "../api/api";
-
-type Idata = {
-  user_id: string;
-  itens: string[];
-  post_id: string;
-  created_at: Date;
-  report_reading: boolean;
-}
+import { useNavigation } from "@react-navigation/native";
 
 
 export function CheckList({ navigation }) {
@@ -23,107 +14,37 @@ export function CheckList({ navigation }) {
   const [loading, setLoading] = useState(false);
   const [checkBoxLeitura, setcheckBoxLeitura] = useState<boolean>(false);
   const [checkIten, setCheckIten] = useState([]);
-  const [dados, setDados] = useState<Idata[]>([]);
-  const [itensAnterior, setItensAnterior] = useState();
-  const [itens, setItens] = useState([]);
-  const [oldItems, SetOldItems] = useState([]);
-  const [post, setPost] = useState('');
-  const crudService = new CrudService();
+  const [itensAnterior, setItensAnterior] = useState(false);
+  const [listItens, setListItens] = useState([]);
+  const navigate = useNavigation();
 
-  async function searchLatestCheckList(){
-    try {
-      const response = await crudService.findAll('/service-day');
-      setDados(response.data);
-    } catch (error) {
-      console.log(error.response.data);
-    }
-  }
-
-  const itensAPI = async() => {
-    try {
-      const response = await crudService.findAllItensPost('post/itens');
-      setItens(response.data);
-    } catch (error) {
-      console.log(error.response.data);
-      setItens(error.response.data);
-    }
-  }
-
-  const startDayService = async () => {
-    if(checkBoxLeitura == false){
-      Alert.alert("Leitura do relatório", "Você não confirmou a leitura do relatório deseja proseguir ?", [
-        {
-          text: 'Aceitar',
-          onPress: async () => {
-            const id = await AsyncStorage.getItem("id");
-            const post = await AsyncStorage.getItem("post")
-            var nameItens = [];
-            setLoading(true);
-            checkIten.map(e => nameItens.push(e.itens));
-            await crudService.save("/service-day", {
-              user_id: id,
-              itens: nameItens,
-              post_id: post,
-              created_at: dayjs().format('YYYY-MM-DD HH:mm:ss'),
-              report_reading: checkBoxLeitura == true ? 1 : 0
-            }).then(async (e) => {
-              await navigation.navigate("HomeAuth")
-            }).catch(e => {
-              console.log(e.response.data);
-              return
-            }).finally(() => setLoading(false))
-          }
-        },
-        {
-          text: 'Cancelar',
-          onPress: () => {return}
-        }
-      ])
-    }
-    if(checkBoxLeitura == true){
-      const id = await AsyncStorage.getItem("id");
-      const post = await AsyncStorage.getItem("post")
-      var nameItens = [];
-      setLoading(true);
-      checkIten.map(e => nameItens.push(e.itens));
-      await crudService.save("/service-day", {
-        user_id: id,
-        itens: nameItens,
-        post_id: post,
-        created_at: dayjs().format(),
-        report_reading: checkBoxLeitura == true ? 1 : 0
-      }).then(async (e) => {
-        await navigation.navigate("HomeAuth")
-      }).catch(e => {
-        console.log(e.response.data);
-        return
-      }).finally(() => setLoading(false))
-      await navigation.navigate("HomeAuth")
-    }
+  async function listAllItensPost(){
+    const post_id = await AsyncStorage.getItem("post_id");
+    api.get(`/post/find-itens-post/${post_id}`).then(response => {
+      const {PostItens} = response.data;
+      PostItens.map(({itens}) => {
+        listItens.push(itens);
+      });
+    })
   }
 
   const listAllItens = ({item, index}) => (
     <HStack alignItems="center" mt="4">
       <Checkbox
-        value={checkIten.find(iten => iten.itensId === item.itensId ? true : false)}
-        key={item.itensId}
+        value={checkIten.find(iten => iten === item.id ? true : false)}
+        key={item.id}
         color={setCheckIten ? '#000' : '#CEE0EF'}
         onValueChange={() => {
-          handleListTap(item)
+          handleListTap(item.id)
         }}
       />
-      <TextNativeBase style={styles.textoCheckBox}>{item.itens}</TextNativeBase>
+      <TextNativeBase style={styles.textoCheckBox}>{item.name}</TextNativeBase>
     </HStack>
   )
   
 
-  const listarItensAnterior = ({index, item}) => (
-    <View>
-      <Text style={styles.textoCheckListAnterior}>{item.itens}</Text>
-    </View>
-  )
-
   const handleListTap = (item) => {
+    console.log(item)
     let itenId = [...checkIten];   // add this
     const index = itenId.indexOf(item);
     console.log(checkIten)
@@ -135,24 +56,25 @@ export function CheckList({ navigation }) {
     setCheckIten(itenId);
   };
 
-  async function listarItensAntigos() {
-    try {
-      const data = await api.get("/service-day/latest", {
-        start_date: "2022-12-13 00:00:00.000",  
-        end_date: "2022-12-13 23:59:00.000",
-        post_id: "d64742ff-248b-4111-8eb3-5d2b2897abba"
-      });
-      console.log(data.data);
-    } catch (error) {
 
-      //console.log(error.response.data);
+  async function startDayService() {
+    if(checkBoxLeitura){
+      const user_id = await AsyncStorage.getItem("user_id");
+      const post_id = await AsyncStorage.getItem("post_id");
+      api.post("/service-day", {
+        user_id,
+        report_reading: true,
+        itens_id: checkIten,
+        post_id
+      }).then(() => {
+        navigate.navigate("HomeAuth");
+      }).finally(() => setLoading(false));
+
     }
   }
 
   useEffect(() => {
-    searchLatestCheckList();
-    itensAPI();
-    listarItensAntigos();
+    listAllItensPost();
   }, [])
 
   return (
@@ -181,8 +103,8 @@ export function CheckList({ navigation }) {
           rounded="md"
           alignSelf="center"
         >
-          <FlatList 
-            data={itens}
+         <FlatList 
+            data={listItens}
             renderItem={listAllItens}
             contentContainerStyle={{paddingBottom: 15}}
           />

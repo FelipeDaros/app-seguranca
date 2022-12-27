@@ -9,6 +9,7 @@ import { Center, useTheme, Text, VStack } from "native-base";
 import { useNavigation } from "@react-navigation/native";
 import { Header } from "../components/Header";
 import api from "../api/api";
+import { GetCompanyUser } from "../services/GetCompanyUser";
 
 export default function RondaPonto(){
   const [loading, setLoading] = useState(false);
@@ -23,12 +24,14 @@ export default function RondaPonto(){
     let {coords} = await Location.getCurrentPositionAsync();
     setLocation(location);
     setLoading(true);
-    
+
+    const {company_id} = await GetCompanyUser();
+
     await api.post('/point',{
-    latitude: String(coords.latitude),
-    longitude: String(coords.longitude),
-    name: textoSetor
-    company_id: company
+    latitude: Number(coords.latitude),
+    longitude: Number(coords.longitude),
+    name: textoSetor,
+    company_id
     }).then(r => {
     setLocation(null);
     setTextoSetor('');

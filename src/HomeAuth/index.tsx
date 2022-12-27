@@ -21,24 +21,13 @@ export default function HomeAuth({navigation}){
   const [proximoAlerta, setProximoAlerta] = useState('');
 
   async function horario(){
-    const id = await AsyncStorage.getItem("id");
-    setLoading(true);
-    await crudService.findOne('time-alert/', id)
-    .then(e => {
-    })
-    .catch(error=> {
-      setAlertData(error.response.data)
-    }).finally(() => setLoading(false));
     
-    var horarioBanco = dayjs(alertData).format('YYYY-MM-DD HH:mm:ss')
-    var horarioAdd= dayjs(horarioBanco).add(4, 'hour');
-    setProximoAlerta(dayjs(horarioAdd).format('YYYY-MM-DD HH:mm:ss'));
   }
 
   async function ativarAlerta(){
     setLoading(true);
     const user_id = await AsyncStorage.getItem("id");
-    const company_id = await AsyncStorage.getItem("company");
+    
     const horarioAtual = dayjs().format('YYYY-MM-DD HH:mm:ss')
     if(proximoAlerta >= horarioAtual){
       setLoading(false);
@@ -48,9 +37,7 @@ export default function HomeAuth({navigation}){
         createRounds();
         await api.post('time-alert', {
           user_id,
-          company_id,
-          latestAlert: horarioAtual,
-          late: 0
+          late: false
         })
       } catch (error) {
         Alert.alert("Alerta", "HORARIO C : Ocorreu um erro inesperado! Entre em contato com o T.I RAMAL 220");

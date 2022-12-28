@@ -13,8 +13,8 @@ import { Center, Text, useTheme, VStack } from "native-base";
 import { useNavigation } from "@react-navigation/native";
 import * as Network from 'expo-network';
 import { RoundSaveOffiline } from "../storage/round/roundSaveOffline";
-import { AppError } from "../error/AppError";
 import { Header } from "../components/Header";
+import { AppError } from "../infra/error/AppError";
 
 
 export default function PontoSelecionado(props){

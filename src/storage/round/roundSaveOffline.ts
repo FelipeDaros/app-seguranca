@@ -1,5 +1,5 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { AppError } from "../../error/AppError";
+import { AppError } from "../../infra/error/AppError";
 import { ROUND_COLLECTION_OFFLINE } from "../storageConfig";
 import { RoundFindAllOffline } from "./roundFindAllOffline";
 import { RoundStorageDTO } from "./RoundStorageDTO";

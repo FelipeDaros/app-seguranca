@@ -1,17 +1,15 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import api from "../api/api";
 import { RoundCreate } from "../storage/round/roundCreate";
 import { ROUND_COLLECTION } from "../storage/storageConfig";
-import CrudService from "./crudService";
+import { GetCompanyUser } from "./GetCompanyUser";
 
 export async function createRounds(){
-  const id = await AsyncStorage.getItem("id");
-  const post_id = await AsyncStorage.getItem("post")
-  const crudService = new CrudService();
-
+  const {company_id} = await GetCompanyUser();
   
   try {
-    const respose = await crudService.findAll(`/service-point/point/${post_id}`);
-    RoundCreate(respose.data);
+    const {data} = await api.get(`/point/${company_id}`);
+    RoundCreate(data);
     const rounds = await AsyncStorage.getItem(ROUND_COLLECTION);
     
     return rounds;

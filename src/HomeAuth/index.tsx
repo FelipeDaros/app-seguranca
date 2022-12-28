@@ -17,18 +17,29 @@ export default function HomeAuth({navigation}){
   const { colors } = useTheme();
   const ONE_SECOND_IN_MS = 500;
   const crudService = new CrudService();
-  const [alertData, setAlertData] = useState('');
   const [proximoAlerta, setProximoAlerta] = useState('');
+  const [time, setTime] = useState('');
 
   async function horario(){
+    const user_id = await AsyncStorage.getItem("user_id");
+    const {data} = await api.get(`/time-alert/user/${user_id}`);
+
+    const dataFormatada = dayjs(data.created_at).format('YYYY-MM-DD HH:mm:ss');
+    const proximoAlerta = dayjs(data.created_at).add(1, "hours");
+    const proximoAlertaFormatado = dayjs(proximoAlerta).format('YYYY-MM-DD HH:mm:ss');
     
+
+    setProximoAlerta(proximoAlertaFormatado);
+    setTime(dataFormatada);
   }
 
   async function ativarAlerta(){
     setLoading(true);
-    const user_id = await AsyncStorage.getItem("id");
     
+    const user_id = await AsyncStorage.getItem("user_id");
+
     const horarioAtual = dayjs().format('YYYY-MM-DD HH:mm:ss')
+    
     if(proximoAlerta >= horarioAtual){
       setLoading(false);
       return Alert.alert("ALERTA", "Não está no horario ainda para fazer a ronda!");
@@ -42,9 +53,9 @@ export default function HomeAuth({navigation}){
       } catch (error) {
         Alert.alert("Alerta", "HORARIO C : Ocorreu um erro inesperado! Entre em contato com o T.I RAMAL 220");
       }
-      horario();
       setLoading(false);
       await AsyncStorage.setItem("horario", horarioAtual);
+      horario();
       return Alert.alert("ALERTA", "Você já pode ir fazer a ronda!");
     }
   }
@@ -109,7 +120,7 @@ export default function HomeAuth({navigation}){
 
   useEffect(() => {
     horario();
-  }, [proximoAlerta, alertData]);
+  }, []);
 
   return(
     <VStack bg="gray.500" flex={1}>
